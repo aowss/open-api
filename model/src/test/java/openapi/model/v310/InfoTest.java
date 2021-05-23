@@ -49,7 +49,7 @@ public class InfoTest {
 
     @Test
     @Tag("JSON")
-    @DisplayName("All fields")
+    @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws URISyntaxException, IOException {
         Info info = jsonMapper.readValue(getClass().getResource(allFieldsJSON), Info.class);
         validateAllFields(info);
@@ -57,7 +57,7 @@ public class InfoTest {
 
     @Test
     @Tag("YAML")
-    @DisplayName("All fields")
+    @DisplayName("All fields [YAML]")
     public void allFieldsYAML() throws URISyntaxException, IOException {
         Info info = yamlMapper.readValue(getClass().getResource(allFieldsYAML), Info.class);
         validateAllFields(info);
@@ -65,7 +65,7 @@ public class InfoTest {
 
     @Test
     @Tag("JSON")
-    @DisplayName("Mandatory fields")
+    @DisplayName("Mandatory fields [JSON]")
     public void mandatoryFieldsJSON() throws URISyntaxException, IOException {
         Info info = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), Info.class);
         validateMandatoryFields(info);
@@ -73,7 +73,7 @@ public class InfoTest {
 
     @Test
     @Tag("YAML")
-    @DisplayName("Mandatory fields")
+    @DisplayName("Mandatory fields [YAML]")
     public void mandatoryFieldsYAML() throws URISyntaxException, IOException {
         Info info = yamlMapper.readValue(getClass().getResource(mandatoryFieldsYAML), Info.class);
         validateMandatoryFields(info);
@@ -81,7 +81,7 @@ public class InfoTest {
 
     @Test
     @Tag("JSON")
-    @DisplayName("Missing Mandatory fields")
+    @DisplayName("Missing Mandatory fields [JSON]")
     public void missingFieldsJSON() throws URISyntaxException, IOException {
         Info info = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), Info.class);
         Set<ConstraintViolation<Info>> violations = validator.validate(info);
@@ -90,7 +90,7 @@ public class InfoTest {
 
     @Test
     @Tag("YAML")
-    @DisplayName("Missing Mandatory fields")
+    @DisplayName("Missing Mandatory fields [YAML]")
     public void missingFieldsYAML() throws URISyntaxException, IOException {
         Info info = yamlMapper.readValue(getClass().getResource(missingFieldsYAML), Info.class);
         Set<ConstraintViolation<Info>> violations = validator.validate(info);
@@ -99,7 +99,7 @@ public class InfoTest {
 
     @Test
     @Tag("JSON")
-    @DisplayName("invalid 'termsOfService' field: wrong type")
+    @DisplayName("invalid 'termsOfService' field: wrong type [JSON]")
     public void invalidTermsOfServiceJSON() {
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidTermsOfServiceJSON), Info.class));
         assertThat(exception.getValue(), is("terms"));
@@ -109,7 +109,7 @@ public class InfoTest {
 
     @Test
     @Tag("YAML")
-    @DisplayName("invalid 'termsOfService' field: wrong type")
+    @DisplayName("invalid 'termsOfService' field: wrong type [YAML]")
     public void invalidTermsOfServiceYAML() {
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> yamlMapper.readValue(getClass().getResource(invalidTermsOfServiceYAML), Info.class));
         assertThat(exception.getValue(), is("terms"));

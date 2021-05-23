@@ -41,7 +41,7 @@ public class ContactTest {
 
     @Test
     @Tag("JSON")
-    @DisplayName("All fields")
+    @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws URISyntaxException, IOException {
         Contact contact = jsonMapper.readValue(getClass().getResource(allFieldsJSON), Contact.class);
         validateAllFields(contact);
@@ -49,7 +49,7 @@ public class ContactTest {
 
     @Test
     @Tag("YAML")
-    @DisplayName("All fields")
+    @DisplayName("All fields [YAML]")
     public void allFieldsYAML() throws URISyntaxException, IOException {
         Contact contact = yamlMapper.readValue(getClass().getResource(allFieldsYAML), Contact.class);
         validateAllFields(contact);
