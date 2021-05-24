@@ -1,0 +1,5 @@
+{
+  "enum": "8443",
+  "default": "8443",
+  "description": "the port number"
+}
