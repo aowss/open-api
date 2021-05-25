@@ -74,9 +74,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
                 <configuration>
-                    <argLine>
-                        --illegal-access=permit --enable-preview
-                    </argLine>
+                    <argLine>--enable-preview</argLine>
                 </configuration>
             </plugin>
 
@@ -91,11 +89,32 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.1</version>
+            </plugin>
+
         </plugins>
 
     </build>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <release>16</release>
+                    <additionalOptions>--enable-preview</additionalOptions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <repositories>
+        <!-- In order to run JUnit 5 tests in IntelliJ 2021.1.1 -->
         <repository>
             <id>ebi</id>
             <name>EBIPublic Repository</name>

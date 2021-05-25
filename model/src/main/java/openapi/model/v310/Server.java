@@ -9,6 +9,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * An object representing a Server.
+ *
+ * @param url A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in {brackets}.
+ * @param description An optional string describing the host designated by the URL. CommonMark syntax MAY be used for rich text representation.
+ * @param variables A map between a variable name and its value. The value is used for substitution in the server's URL template.
+ * @throws IllegalArgumentException if the {@code url} uses variable substitutions and the {@code variables} parameter is {@code null} or empty;
+ *                                  if the {@code url} uses variable substitutions and the {@code variables} doesn't define some of the variables;
+ *                                  if the {@code url}, after variable substitutions, is not a valid URL.
+ */
 public record Server(@NotNull String url, String description, Map<String, ServerVariable> variables) {
 
     private static Pattern pattern = Pattern.compile("\\{(.+?)\\}");
@@ -37,6 +47,10 @@ public record Server(@NotNull String url, String description, Map<String, Server
         effectiveUrl();
     }
 
+    /**
+     * Returns the URL after variable substitutions, if any, are made.
+     * @return the URL
+     */
     public final URL effectiveUrl() {
         if (url == null) return null;
         String effectiveUrl = url;
