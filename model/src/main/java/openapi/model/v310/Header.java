@@ -2,6 +2,9 @@ package openapi.model.v310;
 
 import java.util.Map;
 
+/**
+ *
+ */
 public record Header(String description, Boolean required, Boolean depracted, Style style, Boolean explode, Boolean allowReserved, Schema schema, Object example, Map<String, Example> examples, Map<String, MediaType> content) {
     public Header {
         if (schema != null && content != null) throw new IllegalArgumentException("A 'header' Object can't have both a 'schema' and a 'content' field");
