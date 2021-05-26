@@ -15,14 +15,21 @@ import java.util.regex.Pattern;
  * @param url A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in {brackets}.
  * @param description An optional string describing the host designated by the URL. CommonMark syntax MAY be used for rich text representation.
  * @param variables A map between a variable name and its value. The value is used for substitution in the server's URL template.
- * @throws IllegalArgumentException if the {@code url} uses variable substitutions and the {@code variables} parameter is {@code null} or empty;
- *                                  if the {@code url} uses variable substitutions and the {@code variables} doesn't define some of the variables;
- *                                  if the {@code url}, after variable substitutions, is not a valid URL.
  */
 public record Server(@NotNull String url, String description, Map<String, ServerVariable> variables) {
 
     private static Pattern pattern = Pattern.compile("\\{(.+?)\\}");
 
+    /**
+     * Creates an instance of a {@code Server} record class.
+     *
+     * @param url A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in {brackets}.
+     * @param description An optional string describing the host designated by the URL. CommonMark syntax MAY be used for rich text representation.
+     * @param variables A map between a variable name and its value. The value is used for substitution in the server's URL template.
+     * @throws IllegalArgumentException if the {@code url} uses variable substitutions and the {@code variables} parameter is {@code null} or empty; <br/>
+     *                                  if the {@code url} uses variable substitutions and the {@code variables} doesn't define some of the variables; <br/>
+     *                                  if the {@code url}, after variable substitutions, is not a valid URL.
+     */
     public Server(@NotNull String url, String description, Map<String, ServerVariable> variables) {
         if (url != null && url.contains("{")) {
             if (variables == null || variables.isEmpty()) throw new IllegalArgumentException("The 'url' field can't use variable substitutions if the 'variables' field is not present");
