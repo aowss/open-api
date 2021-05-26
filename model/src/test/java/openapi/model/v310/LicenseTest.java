@@ -1,5 +1,6 @@
 package openapi.model.v310;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
@@ -18,8 +19,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 
+import static java.util.stream.Collectors.joining;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -81,7 +82,7 @@ public class    LicenseTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields")
-    public void mandatoryFieldsJSON() throws IOException {
+    public void mandatoryFields() throws IOException {
         License license = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), License.class);
         validateMandatoryFields(license);
     }
@@ -89,7 +90,7 @@ public class    LicenseTest {
     @Test
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
-    public void missingFieldsJSON() throws IOException {
+    public void missingFields() throws IOException {
         License license = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), License.class);
         Set<ConstraintViolation<License>> violations = validator.validate(license);
         validateMissingFields(violations);
@@ -102,7 +103,7 @@ public class    LicenseTest {
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), License.class));
         assertThat(exception.getValue(), is("license"));
         assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().get(0).getFieldName(), is("url"));
+        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));
     }
 
     @Test

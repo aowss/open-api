@@ -1,7 +1,6 @@
 package openapi.model.v310;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import openapi.model.v310.utils.Parser;
 import org.junit.jupiter.api.*;
@@ -17,7 +16,6 @@ import java.net.URL;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -62,7 +60,7 @@ public class ServerTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields")
-    public void mandatoryFieldsJSON() throws IOException {
+    public void mandatoryFields() throws IOException {
         Server server = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), Server.class);
         validateMandatoryFields(server);
     }
@@ -70,7 +68,7 @@ public class ServerTest {
     @Test
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
-    public void missingFieldsJSON() throws IOException {
+    public void missingFields() throws IOException {
         Server server = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), Server.class);
         Set<ConstraintViolation<Server>> violations = validator.validate(server);
         validateMissingFields(violations);
@@ -79,7 +77,7 @@ public class ServerTest {
     @Test
     @Tag("JSON")
     @DisplayName("invalid 'url' field")
-    public void invalidUrlJSON() {
+    public void invalidUrl() {
         ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
@@ -88,7 +86,7 @@ public class ServerTest {
     @Test
     @Tag("JSON")
     @DisplayName("invalid 'url' field after substitution")
-    public void invalidUrlAfterSubstitutionJSON() {
+    public void invalidUrlAfterSubstitution() {
         ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlAfterSubstitutionJSON), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
@@ -97,7 +95,7 @@ public class ServerTest {
     @Test
     @Tag("JSON")
     @DisplayName("missing variable in 'url' substitution")
-    public void invalidSubstitutionJSON() {
+    public void invalidSubstitution() {
         ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidSubstitutionJSON), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field uses substitution variables that are not defined in the 'variables' field"));

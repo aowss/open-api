@@ -1,14 +1,6 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import openapi.model.v310.utils.Parser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +12,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,7 +60,7 @@ public class ServerVariableTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields")
-    public void mandatoryFieldsJSON() throws IOException {
+    public void mandatoryFields() throws IOException {
         ServerVariable serverVariable = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), ServerVariable.class);
         assertThat(serverVariable.defaultValue(), is("8443"));
     }
@@ -79,7 +68,7 @@ public class ServerVariableTest {
     @Test
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
-    public void missingFieldsJSON() throws IOException {
+    public void missingFields() throws IOException {
         ServerVariable serverVariable = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), ServerVariable.class);
         Set<ConstraintViolation<ServerVariable>> violations = validator.validate(serverVariable);
         validateMissingFields(violations);

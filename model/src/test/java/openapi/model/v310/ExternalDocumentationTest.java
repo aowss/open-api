@@ -1,5 +1,6 @@
 package openapi.model.v310;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -17,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 
+import static java.util.stream.Collectors.joining;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,16 +45,16 @@ public class ExternalDocumentationTest {
 
     @Test
     @Tag("JSON")
-    @DisplayName("All fields with URL [JSON]")
-    public void allFieldsURLJSON() throws IOException {
+    @DisplayName("All fields [JSON]")
+    public void allFieldsJSON() throws IOException {
         ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(allFieldsJSON), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
     }
 
     @Test
     @Tag("YAML")
-    @DisplayName("All fields with URL [YAML]")
-    public void allFieldsURLYAML() throws IOException {
+    @DisplayName("All fields [YAML]")
+    public void allFieldsYAML() throws IOException {
         ExternalDocumentation externalDocumentation = yamlMapper.readValue(getClass().getResource(allFieldsYAML), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
     }
@@ -60,7 +62,7 @@ public class ExternalDocumentationTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields")
-    public void mandatoryFieldsJSON() throws IOException {
+    public void mandatoryFields() throws IOException {
         ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), ExternalDocumentation.class);
         validateMandatoryFields(externalDocumentation);
     }
@@ -68,7 +70,7 @@ public class ExternalDocumentationTest {
     @Test
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
-    public void missingFieldsJSON() throws IOException {
+    public void missingFields() throws IOException {
         ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), ExternalDocumentation.class);
         Set<ConstraintViolation<ExternalDocumentation>> violations = validator.validate(externalDocumentation);
         validateMissingFields(violations);
@@ -81,7 +83,7 @@ public class ExternalDocumentationTest {
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), ExternalDocumentation.class));
         assertThat(exception.getValue(), is("externalDocumentation"));
         assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().get(0).getFieldName(), is("url"));
+        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));
     }
 
     public void validateAllFields(ExternalDocumentation externalDocumentation) throws MalformedURLException {

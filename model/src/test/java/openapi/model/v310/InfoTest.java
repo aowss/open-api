@@ -1,15 +1,14 @@
 package openapi.model.v310;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.hibernate.validator.HibernateValidator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +18,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import static java.util.stream.Collectors.joining;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -104,7 +104,7 @@ public class InfoTest {
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidTermsOfServiceJSON), Info.class));
         assertThat(exception.getValue(), is("terms"));
         assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().get(0).getFieldName(), is("termsOfService"));
+        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("termsOfService"));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class InfoTest {
         InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> yamlMapper.readValue(getClass().getResource(invalidTermsOfServiceYAML), Info.class));
         assertThat(exception.getValue(), is("terms"));
         assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().get(0).getFieldName(), is("termsOfService"));
+        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("termsOfService"));
     }
 
     public void validateAllFields(Info info) throws MalformedURLException {
