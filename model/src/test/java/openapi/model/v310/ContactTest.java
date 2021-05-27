@@ -26,8 +26,8 @@ public class ContactTest {
 
     static String allFieldsJSON = "/Contact/all-fields.json";
     static String allFieldsYAML = "/Contact/all-fields.yaml";
-    static String invalidUrlJSON = "/Contact/invalid-url.json";
-    static String invalidEmailJSON = "/Contact/invalid-email.json";
+    static String invalidUrl = "/Contact/invalid-url.json";
+    static String invalidEmail = "/Contact/invalid-email.json";
 
     static final ObjectMapper jsonMapper = new ObjectMapper();
     static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -60,7 +60,7 @@ public class ContactTest {
     @Tag("JSON")
     @DisplayName("Invalid 'email' field: doesn't conform to Email annotation")
     public void invalidEmail() throws IOException {
-        Contact contact = jsonMapper.readValue(getClass().getResource(invalidEmailJSON), Contact.class);
+        Contact contact = jsonMapper.readValue(getClass().getResource(invalidEmail), Contact.class);
         Set<ConstraintViolation<Contact>> violations = validator.validate(contact);
         assertThat(violations.size(), is(1));
         var violation = violations.iterator().next();
@@ -73,7 +73,7 @@ public class ContactTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), Contact.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), Contact.class));
         assertThat(exception.getValue(), is("support"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));

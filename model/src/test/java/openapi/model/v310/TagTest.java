@@ -27,9 +27,9 @@ public class TagTest {
 
     static String allFieldsURLJSON = "/Tag/all-fields.json";
     static String allFieldsURLYAML = "/Tag/all-fields.yaml";
-    static String mandatoryFieldsJSON = "/Tag/mandatory-fields.json";
-    static String missingFieldsJSON = "/Tag/missing-fields.json";
-    static String invalidUrlJSON = "/Tag/invalid-docs.json";
+    static String mandatoryFields = "/Tag/mandatory-fields.json";
+    static String missingFields = "/Tag/missing-fields.json";
+    static String invalidUrl = "/Tag/invalid-docs.json";
 
     static final ObjectMapper jsonMapper = new ObjectMapper();
     static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -62,7 +62,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        Tag tag = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), Tag.class);
+        Tag tag = jsonMapper.readValue(getClass().getResource(mandatoryFields), Tag.class);
         validateMandatoryFields(tag);
     }
 
@@ -70,7 +70,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        Tag tag = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), Tag.class);
+        Tag tag = jsonMapper.readValue(getClass().getResource(missingFields), Tag.class);
         Set<ConstraintViolation<Tag>> violations = validator.validate(tag);
         validateMissingFields(violations);
     }
@@ -79,7 +79,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("JSON")
     @DisplayName("invalid 'externalDocs' field")
     public void invalidExternalDocs() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), Tag.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), Tag.class));
         assertThat(exception.getValue(), is("externalDocumentation"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("externalDocs.url"));

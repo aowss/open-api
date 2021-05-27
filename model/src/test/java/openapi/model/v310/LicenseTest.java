@@ -32,9 +32,9 @@ public class    LicenseTest {
     static String allFieldsIdentifierJSON = "/License/all-fields-identifier.json";
     static String allFieldsIdentifierYAML = "/License/all-fields-identifier.yaml";
     static String URLAndIdentifier = "/License/url-identifier.json";
-    static String mandatoryFieldsJSON = "/License/mandatory-fields.json";
-    static String missingFieldsJSON = "/License/missing-fields.json";
-    static String invalidUrlJSON = "/License/invalid-url.json";
+    static String mandatoryFields = "/License/mandatory-fields.json";
+    static String missingFields = "/License/missing-fields.json";
+    static String invalidUrl = "/License/invalid-url.json";
 
     static final ObjectMapper jsonMapper = new ObjectMapper();
     static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -83,7 +83,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        License license = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), License.class);
+        License license = jsonMapper.readValue(getClass().getResource(mandatoryFields), License.class);
         validateMandatoryFields(license);
     }
 
@@ -91,7 +91,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        License license = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), License.class);
+        License license = jsonMapper.readValue(getClass().getResource(missingFields), License.class);
         Set<ConstraintViolation<License>> violations = validator.validate(license);
         validateMissingFields(violations);
     }
@@ -100,7 +100,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), License.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), License.class));
         assertThat(exception.getValue(), is("license"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));

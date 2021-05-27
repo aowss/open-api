@@ -24,8 +24,8 @@ public class DiscriminatorTest {
 
     static String allFieldsJSON = "/Discriminator/all-fields.json";
     static String allFieldsYAML = "/Discriminator/all-fields.yaml";
-    static String mandatoryFieldsJSON = "/Discriminator/mandatory-fields.json";
-    static String missingFieldsJSON = "/Discriminator/missing-fields.json";
+    static String mandatoryFields = "/Discriminator/mandatory-fields.json";
+    static String missingFields = "/Discriminator/missing-fields.json";
 
     static final ObjectMapper jsonMapper = new ObjectMapper();
     static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -58,7 +58,7 @@ public class DiscriminatorTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        Discriminator discriminator = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), Discriminator.class);
+        Discriminator discriminator = jsonMapper.readValue(getClass().getResource(mandatoryFields), Discriminator.class);
         validateMandatoryFields(discriminator);
     }
 
@@ -66,7 +66,7 @@ public class DiscriminatorTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        Discriminator discriminator = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), Discriminator.class);
+        Discriminator discriminator = jsonMapper.readValue(getClass().getResource(missingFields), Discriminator.class);
         Set<ConstraintViolation<Discriminator>> violations = validator.validate(discriminator);
         validateMissingFields(violations);
     }

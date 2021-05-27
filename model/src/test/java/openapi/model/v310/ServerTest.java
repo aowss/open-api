@@ -24,11 +24,11 @@ public class ServerTest {
 
     static String allFieldsJSON = "/Server/all-fields.json";
     static String allFieldsYAML = "/Server/all-fields.yaml";
-    static String mandatoryFieldsJSON = "/Server/mandatory-fields.json";
-    static String missingFieldsJSON = "/Server/missing-fields.json";
-    static String invalidSubstitutionJSON = "/Server/invalid-substitution.json";
-    static String invalidUrlJSON = "/Server/invalid-url.json";
-    static String invalidUrlAfterSubstitutionJSON = "/Server/invalid-url-substitution.json";
+    static String mandatoryFields = "/Server/mandatory-fields.json";
+    static String missingFields = "/Server/missing-fields.json";
+    static String invalidSubstitution = "/Server/invalid-substitution.json";
+    static String invalidUrl = "/Server/invalid-url.json";
+    static String invalidUrlAfterSubstitution = "/Server/invalid-url-substitution.json";
 
     static final ObjectMapper jsonMapper = Parser.jsonMapper;
     static final ObjectMapper yamlMapper = Parser.yamlMapper;
@@ -61,7 +61,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        Server server = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), Server.class);
+        Server server = jsonMapper.readValue(getClass().getResource(mandatoryFields), Server.class);
         validateMandatoryFields(server);
     }
 
@@ -69,7 +69,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        Server server = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), Server.class);
+        Server server = jsonMapper.readValue(getClass().getResource(missingFields), Server.class);
         Set<ConstraintViolation<Server>> violations = validator.validate(server);
         validateMissingFields(violations);
     }
@@ -78,7 +78,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field")
     public void invalidUrl() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), Server.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
     }
@@ -87,7 +87,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field after substitution")
     public void invalidUrlAfterSubstitution() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlAfterSubstitutionJSON), Server.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlAfterSubstitution), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
     }
@@ -96,7 +96,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("missing variable in 'url' substitution")
     public void invalidSubstitution() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidSubstitutionJSON), Server.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidSubstitution), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field uses substitution variables that are not defined in the 'variables' field"));
     }

@@ -28,9 +28,9 @@ public class ExternalDocumentationTest {
 
     static String allFieldsJSON = "/ExternalDocumentation/all-fields.json";
     static String allFieldsYAML = "/ExternalDocumentation/all-fields.yaml";
-    static String mandatoryFieldsJSON = "/ExternalDocumentation/mandatory-fields.json";
-    static String missingFieldsJSON = "/ExternalDocumentation/missing-fields.json";
-    static String invalidUrlJSON = "/ExternalDocumentation/invalid-url.json";
+    static String mandatoryFields = "/ExternalDocumentation/mandatory-fields.json";
+    static String missingFields = "/ExternalDocumentation/missing-fields.json";
+    static String invalidUrl = "/ExternalDocumentation/invalid-url.json";
 
     static final ObjectMapper jsonMapper = new ObjectMapper();
     static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -63,7 +63,7 @@ public class ExternalDocumentationTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), ExternalDocumentation.class);
+        ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(mandatoryFields), ExternalDocumentation.class);
         validateMandatoryFields(externalDocumentation);
     }
 
@@ -71,7 +71,7 @@ public class ExternalDocumentationTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), ExternalDocumentation.class);
+        ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(missingFields), ExternalDocumentation.class);
         Set<ConstraintViolation<ExternalDocumentation>> violations = validator.validate(externalDocumentation);
         validateMissingFields(violations);
     }
@@ -80,7 +80,7 @@ public class ExternalDocumentationTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlJSON), ExternalDocumentation.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), ExternalDocumentation.class));
         assertThat(exception.getValue(), is("externalDocumentation"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));
