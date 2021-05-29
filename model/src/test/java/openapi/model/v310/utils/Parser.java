@@ -72,43 +72,6 @@ public class Parser {
         }
     }
 
-    public static class SecurityRequirementDeserializer extends StdDeserializer<SecurityRequirement> {
-
-        public SecurityRequirementDeserializer() {
-            this(null);
-        }
-
-        public SecurityRequirementDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public SecurityRequirement deserialize(JsonParser parser, DeserializationContext deserializer) throws IOException {
-            JsonNode node = parser.getCodec().readTree(parser);
-            Iterator<Map.Entry<String, JsonNode>> iterator = ((ObjectNode)node).fields();
-            Iterable<Map.Entry<String, JsonNode>> iterable = () -> iterator;
-            Map<String, List<String>> requirements = StreamSupport.stream(iterable.spliterator(), false)
-                .collect(toMap(
-                    entry -> entry.getKey(),
-                    entry -> {
-                        JsonNode value = entry.getValue();
-                        List<String> values = new ArrayList<>();
-                        if (value == null) {
-                            values = null;
-                        } else if (value.isArray()) {
-                            for (JsonNode v : value) {
-                                values.add(v.asText());
-                            }
-                        } else {
-                            throw new IllegalArgumentException("The 'security' field must be an array");
-                        }
-                        return values;
-                    }
-                ));
-            return new SecurityRequirement(requirements);
-        }
-    }
-
     public static class SecuritySchemeDeserializer extends StdDeserializer<SecurityScheme> {
 
         private static ObjectMapper objectMapper = new ObjectMapper();
@@ -180,7 +143,6 @@ public class Parser {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(ServerVariable.class, new ServerVariableDeserializer());
         module.addDeserializer(Version.class, new VersionDeserializer());
-        module.addDeserializer(SecurityRequirement.class, new SecurityRequirementDeserializer());
         module.addDeserializer(SecurityScheme.class, new SecuritySchemeDeserializer());
         module.addDeserializer(OAuthFlow.class, new OAuthFlowDeserializer());
         jsonMapper.registerModule(module);

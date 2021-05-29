@@ -79,9 +79,8 @@ public class OpenApiTest {
         assertThat(oauth2.flows().size(), is(1));
         assertThat(((Implicit)oauth2.flows().get(OAuthFlowType.implicit)).scopes().size(), is(2));
         assertThat(openApi.security().size(), is(1));
-        //  TODO: check if there should be a call to requirements()
-        assertThat(openApi.security().get(0).requirements().size(), is(1));
-        assertThat(openApi.security().get(0).requirements().get("petstore_auth"), is(List.of("write:pets", "read:pets")));
+        assertThat(openApi.security().get(0).size(), is(1));
+        assertThat(openApi.security().get(0).get("petstore_auth"), is(List.of("write:pets", "read:pets")));
         assertThat(openApi.tags().size(), is(1));
         assertThat(openApi.tags().get(0).name(), is("pet"));
         assertThat(openApi.externalDocs().description(), is("Find more info here"));
