@@ -6,18 +6,18 @@ import java.net.URL;
 /**
  * License information for the exposed API.
  *
- * @param name The license name used for the API.
+ * @param name       The license name used for the API.
  * @param identifier An SPDX license expression for the API. The identifier field is mutually exclusive of the url field.
- * @param url A URL to the license used for the API. This MUST be in the form of a URL. The url field is mutually exclusive of the identifier field.
+ * @param url        A URL to the license used for the API. This MUST be in the form of a URL. The url field is mutually exclusive of the identifier field.
  */
 public record License(@NotNull String name, String identifier, URL url) {
 
     /**
      * Creates an instance of a {@code License} record class.
      *
-     * @param name The license name used for the API.
+     * @param name       The license name used for the API.
      * @param identifier An SPDX license expression for the API. The identifier field is mutually exclusive of the url field.
-     * @param url A URL to the license used for the API. This MUST be in the form of a URL. The url field is mutually exclusive of the identifier field.
+     * @param url        A URL to the license used for the API. This MUST be in the form of a URL. The url field is mutually exclusive of the identifier field.
      * @throws IllegalArgumentException if both {@code identifier} and {@code url} are specified
      */
     public License {
@@ -28,7 +28,7 @@ public record License(@NotNull String name, String identifier, URL url) {
     /**
      * Creates an instance of a {@code License} record class.
      *
-     * @param name The license name used for the API.
+     * @param name       The license name used for the API.
      * @param identifier An SPDX license expression for the API. The identifier field is mutually exclusive of the url field.
      */
     public License(@NotNull String name, String identifier) {
@@ -39,7 +39,7 @@ public record License(@NotNull String name, String identifier, URL url) {
      * Creates an instance of a {@code License} record class.
      *
      * @param name The license name used for the API.
-     * @param url A URL to the license used for the API. This MUST be in the form of a URL. The url field is mutually exclusive of the identifier field.
+     * @param url  A URL to the license used for the API. This MUST be in the form of a URL. The url field is mutually exclusive of the identifier field.
      */
     public License(@NotNull String name, URL url) {
         this(name, null, url);

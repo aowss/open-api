@@ -144,7 +144,6 @@ public class InfoTest {
         var fields = violations.stream()
                 .map(violation -> violation.getPropertyPath().toString())
                 .collect(Collectors.toList());
-        System.out.println(fields);
         assertThat(fields, containsInAnyOrder(new String[] { "title", "version" }));
     }
 
