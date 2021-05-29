@@ -14,10 +14,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.MatcherAssert.assertThat;
