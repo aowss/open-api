@@ -18,6 +18,7 @@
 
     <modules>
         <module>model</module>
+        <module>parser</module>
     </modules>
 
     <dependencies>

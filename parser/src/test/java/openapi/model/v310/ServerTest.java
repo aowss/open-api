@@ -1,10 +1,11 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
-import openapi.model.v310.utils.Parser;
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
+
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -30,9 +31,6 @@ public class ServerTest {
     static String invalidUrl = "/Server/invalid-url.json";
     static String invalidUrlAfterSubstitution = "/Server/invalid-url-substitution.json";
 
-    static final ObjectMapper jsonMapper = Parser.jsonMapper;
-    static final ObjectMapper yamlMapper = Parser.yamlMapper;
-
     private static Validator validator;
 
     @BeforeAll
@@ -45,7 +43,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException {
-        Server server = jsonMapper.readValue(getClass().getResource(allFieldsJSON), Server.class);
+        Server server = Parser.parseJSON(getClass().getResource(allFieldsJSON), Server.class);
         validateAllFields(server);
     }
 
@@ -53,7 +51,7 @@ public class ServerTest {
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
     public void allFieldsYAML() throws IOException {
-        Server server = yamlMapper.readValue(getClass().getResource(allFieldsYAML), Server.class);
+        Server server = Parser.parseYAML(getClass().getResource(allFieldsYAML), Server.class);
         validateAllFields(server);
     }
 
@@ -61,7 +59,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        Server server = jsonMapper.readValue(getClass().getResource(mandatoryFields), Server.class);
+        Server server = Parser.parseJSON(getClass().getResource(mandatoryFields), Server.class);
         validateMandatoryFields(server);
     }
 
@@ -69,7 +67,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        Server server = jsonMapper.readValue(getClass().getResource(missingFields), Server.class);
+        Server server = Parser.parseJSON(getClass().getResource(missingFields), Server.class);
         Set<ConstraintViolation<Server>> violations = validator.validate(server);
         validateMissingFields(violations);
     }
@@ -78,7 +76,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field")
     public void invalidUrl() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), Server.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
     }
@@ -87,7 +85,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field after substitution")
     public void invalidUrlAfterSubstitution() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrlAfterSubstitution), Server.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrlAfterSubstitution), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
     }
@@ -96,7 +94,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("missing variable in 'url' substitution")
     public void invalidSubstitution() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(invalidSubstitution), Server.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(invalidSubstitution), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field uses substitution variables that are not defined in the 'variables' field"));
     }

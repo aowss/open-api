@@ -1,13 +1,14 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -32,9 +33,6 @@ public class ExternalDocumentationTest {
     static String missingFields = "/ExternalDocumentation/missing-fields.json";
     static String invalidUrl = "/ExternalDocumentation/invalid-url.json";
 
-    static final ObjectMapper jsonMapper = new ObjectMapper();
-    static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
     private static Validator validator;
 
     @BeforeAll
@@ -47,7 +45,7 @@ public class ExternalDocumentationTest {
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException {
-        ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(allFieldsJSON), ExternalDocumentation.class);
+        ExternalDocumentation externalDocumentation = Parser.parseJSON(getClass().getResource(allFieldsJSON), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
     }
 
@@ -55,7 +53,7 @@ public class ExternalDocumentationTest {
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
     public void allFieldsYAML() throws IOException {
-        ExternalDocumentation externalDocumentation = yamlMapper.readValue(getClass().getResource(allFieldsYAML), ExternalDocumentation.class);
+        ExternalDocumentation externalDocumentation = Parser.parseYAML(getClass().getResource(allFieldsYAML), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
     }
 
@@ -63,7 +61,7 @@ public class ExternalDocumentationTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(mandatoryFields), ExternalDocumentation.class);
+        ExternalDocumentation externalDocumentation = Parser.parseJSON(getClass().getResource(mandatoryFields), ExternalDocumentation.class);
         validateMandatoryFields(externalDocumentation);
     }
 
@@ -71,7 +69,7 @@ public class ExternalDocumentationTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        ExternalDocumentation externalDocumentation = jsonMapper.readValue(getClass().getResource(missingFields), ExternalDocumentation.class);
+        ExternalDocumentation externalDocumentation = Parser.parseJSON(getClass().getResource(missingFields), ExternalDocumentation.class);
         Set<ConstraintViolation<ExternalDocumentation>> violations = validator.validate(externalDocumentation);
         validateMissingFields(violations);
     }
@@ -80,7 +78,7 @@ public class ExternalDocumentationTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), ExternalDocumentation.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), ExternalDocumentation.class));
         assertThat(exception.getValue(), is("externalDocumentation"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));
@@ -101,4 +99,5 @@ public class ExternalDocumentationTest {
         assertThat(violation.getConstraintDescriptor().getMessageTemplate(), is("{javax.validation.constraints.NotNull.message}"));
         assertThat(violation.getPropertyPath().toString(), is("url"));
     }
+
 }

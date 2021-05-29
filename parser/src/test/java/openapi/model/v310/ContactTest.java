@@ -1,11 +1,12 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -29,9 +30,6 @@ public class ContactTest {
     static String invalidUrl = "/Contact/invalid-url.json";
     static String invalidEmail = "/Contact/invalid-email.json";
 
-    static final ObjectMapper jsonMapper = new ObjectMapper();
-    static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
     private static Validator validator;
 
     @BeforeAll
@@ -44,7 +42,7 @@ public class ContactTest {
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException {
-        Contact contact = jsonMapper.readValue(getClass().getResource(allFieldsJSON), Contact.class);
+        Contact contact = Parser.parseJSON(getClass().getResource(allFieldsJSON), Contact.class);
         validateAllFields(contact);
     }
 
@@ -52,7 +50,7 @@ public class ContactTest {
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
     public void allFieldsYAML() throws IOException {
-        Contact contact = yamlMapper.readValue(getClass().getResource(allFieldsYAML), Contact.class);
+        Contact contact = Parser.parseYAML(getClass().getResource(allFieldsYAML), Contact.class);
         validateAllFields(contact);
     }
 
@@ -60,7 +58,7 @@ public class ContactTest {
     @Tag("JSON")
     @DisplayName("Invalid 'email' field: doesn't conform to Email annotation")
     public void invalidEmail() throws IOException {
-        Contact contact = jsonMapper.readValue(getClass().getResource(invalidEmail), Contact.class);
+        Contact contact = Parser.parseJSON(getClass().getResource(invalidEmail), Contact.class);
         Set<ConstraintViolation<Contact>> violations = validator.validate(contact);
         assertThat(violations.size(), is(1));
         var violation = violations.iterator().next();
@@ -73,7 +71,7 @@ public class ContactTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), Contact.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), Contact.class));
         assertThat(exception.getValue(), is("support"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));

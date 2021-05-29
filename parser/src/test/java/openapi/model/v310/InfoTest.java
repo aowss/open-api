@@ -1,11 +1,12 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,9 +37,6 @@ public class InfoTest {
     static String invalidTermsOfServiceJSON = "/Info/invalid-termsOfService.json";
     static String invalidTermsOfServiceYAML = "/Info/invalid-termsOfService.yaml";
 
-    static final ObjectMapper jsonMapper = new ObjectMapper();
-    static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
     private static Validator validator;
 
     @BeforeAll
@@ -51,7 +49,7 @@ public class InfoTest {
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException {
-        Info info = jsonMapper.readValue(getClass().getResource(allFieldsJSON), Info.class);
+        Info info = Parser.parseJSON(getClass().getResource(allFieldsJSON), Info.class);
         validateAllFields(info);
     }
 
@@ -59,7 +57,7 @@ public class InfoTest {
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
     public void allFieldsYAML() throws IOException {
-        Info info = yamlMapper.readValue(getClass().getResource(allFieldsYAML), Info.class);
+        Info info = Parser.parseYAML(getClass().getResource(allFieldsYAML), Info.class);
         validateAllFields(info);
     }
 
@@ -67,7 +65,7 @@ public class InfoTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields [JSON]")
     public void mandatoryFieldsJSON() throws IOException {
-        Info info = jsonMapper.readValue(getClass().getResource(mandatoryFieldsJSON), Info.class);
+        Info info = Parser.parseJSON(getClass().getResource(mandatoryFieldsJSON), Info.class);
         validateMandatoryFields(info);
     }
 
@@ -75,7 +73,7 @@ public class InfoTest {
     @Tag("YAML")
     @DisplayName("Mandatory fields [YAML]")
     public void mandatoryFieldsYAML() throws IOException {
-        Info info = yamlMapper.readValue(getClass().getResource(mandatoryFieldsYAML), Info.class);
+        Info info = Parser.parseYAML(getClass().getResource(mandatoryFieldsYAML), Info.class);
         validateMandatoryFields(info);
     }
 
@@ -83,7 +81,7 @@ public class InfoTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields [JSON]")
     public void missingFieldsJSON() throws IOException {
-        Info info = jsonMapper.readValue(getClass().getResource(missingFieldsJSON), Info.class);
+        Info info = Parser.parseJSON(getClass().getResource(missingFieldsJSON), Info.class);
         Set<ConstraintViolation<Info>> violations = validator.validate(info);
         validateMissingFields(violations);
     }
@@ -92,7 +90,7 @@ public class InfoTest {
     @Tag("YAML")
     @DisplayName("Missing Mandatory fields [YAML]")
     public void missingFieldsYAML() throws IOException {
-        Info info = yamlMapper.readValue(getClass().getResource(missingFieldsYAML), Info.class);
+        Info info = Parser.parseYAML(getClass().getResource(missingFieldsYAML), Info.class);
         Set<ConstraintViolation<Info>> violations = validator.validate(info);
         validateMissingFields(violations);
     }
@@ -101,7 +99,7 @@ public class InfoTest {
     @Tag("JSON")
     @DisplayName("invalid 'termsOfService' field: wrong type [JSON]")
     public void invalidTermsOfServiceJSON() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidTermsOfServiceJSON), Info.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidTermsOfServiceJSON), Info.class));
         assertThat(exception.getValue(), is("terms"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("termsOfService"));
@@ -111,7 +109,7 @@ public class InfoTest {
     @Tag("YAML")
     @DisplayName("invalid 'termsOfService' field: wrong type [YAML]")
     public void invalidTermsOfServiceYAML() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> yamlMapper.readValue(getClass().getResource(invalidTermsOfServiceYAML), Info.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseYAML(getClass().getResource(invalidTermsOfServiceYAML), Info.class));
         assertThat(exception.getValue(), is("terms"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("termsOfService"));

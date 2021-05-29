@@ -1,11 +1,12 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import openapi.model.v310.security.OAuth2;
 import openapi.model.v310.security.Type;
 import openapi.model.v310.security.oauth.Implicit;
 import openapi.model.v310.security.oauth.OAuthFlowType;
-import openapi.model.v310.utils.Parser;
+
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -29,9 +30,6 @@ public class OpenApiTest {
     static String allFieldsJSON = "/Full/all-fields.json";
     static String allFieldsYAML = "/Full/all-fields.yaml";
 
-    static final ObjectMapper jsonMapper = Parser.jsonMapper;
-    static final ObjectMapper yamlMapper = Parser.yamlMapper;
-
     private static Validator validator;
 
     @BeforeAll
@@ -44,7 +42,7 @@ public class OpenApiTest {
 //    @Tag("JSON")
 //    @DisplayName("All fields [JSON]")
 //    public void allFieldsJSON() throws IOException {
-//        OpenApi openApi = jsonMapper.readValue(getClass().getResource(allFieldsJSON), OpenApi.class);
+//        OpenApi openApi = Parser.parseJSON(getClass().getResource(allFieldsJSON), OpenApi.class);
 //        validateAllFields(openApi);
 //    }
 
@@ -52,7 +50,7 @@ public class OpenApiTest {
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
     public void allFieldsYAML() throws IOException {
-        OpenApi openApi = yamlMapper.readValue(getClass().getResource(allFieldsYAML), OpenApi.class);
+        OpenApi openApi = Parser.parseYAML(getClass().getResource(allFieldsYAML), OpenApi.class);
         validateAllFields(openApi);
     }
 

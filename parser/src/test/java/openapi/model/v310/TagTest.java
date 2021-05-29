@@ -1,12 +1,13 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -31,9 +32,6 @@ public class TagTest {
     static String missingFields = "/Tag/missing-fields.json";
     static String invalidUrl = "/Tag/invalid-docs.json";
 
-    static final ObjectMapper jsonMapper = new ObjectMapper();
-    static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
     private static Validator validator;
 
     @BeforeAll
@@ -46,7 +44,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("JSON")
     @DisplayName("All fields with URL [JSON]")
     public void allFieldsURLJSON() throws IOException {
-        Tag tag = jsonMapper.readValue(getClass().getResource(allFieldsURLJSON), Tag.class);
+        Tag tag = Parser.parseJSON(getClass().getResource(allFieldsURLJSON), Tag.class);
         validateAllFields(tag);
     }
 
@@ -54,7 +52,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("YAML")
     @DisplayName("All fields with URL [YAML]")
     public void allFieldsURLYAML() throws IOException {
-        Tag tag = yamlMapper.readValue(getClass().getResource(allFieldsURLYAML), Tag.class);
+        Tag tag = Parser.parseYAML(getClass().getResource(allFieldsURLYAML), Tag.class);
         validateAllFields(tag);
     }
 
@@ -62,7 +60,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        Tag tag = jsonMapper.readValue(getClass().getResource(mandatoryFields), Tag.class);
+        Tag tag = Parser.parseJSON(getClass().getResource(mandatoryFields), Tag.class);
         validateMandatoryFields(tag);
     }
 
@@ -70,7 +68,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        Tag tag = jsonMapper.readValue(getClass().getResource(missingFields), Tag.class);
+        Tag tag = Parser.parseJSON(getClass().getResource(missingFields), Tag.class);
         Set<ConstraintViolation<Tag>> violations = validator.validate(tag);
         validateMissingFields(violations);
     }
@@ -79,7 +77,7 @@ public class TagTest {
     @org.junit.jupiter.api.Tag("JSON")
     @DisplayName("invalid 'externalDocs' field")
     public void invalidExternalDocs() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), Tag.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), Tag.class));
         assertThat(exception.getValue(), is("externalDocumentation"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("externalDocs.url"));
@@ -101,4 +99,5 @@ public class TagTest {
         assertThat(violation.getConstraintDescriptor().getMessageTemplate(), is("{javax.validation.constraints.NotNull.message}"));
         assertThat(violation.getPropertyPath().toString(), is("name"));
     }
+
 }

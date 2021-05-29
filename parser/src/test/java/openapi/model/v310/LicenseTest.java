@@ -1,14 +1,15 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -36,9 +37,6 @@ public class    LicenseTest {
     static String missingFields = "/License/missing-fields.json";
     static String invalidUrl = "/License/invalid-url.json";
 
-    static final ObjectMapper jsonMapper = new ObjectMapper();
-    static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
     private static Validator validator;
 
     @BeforeAll
@@ -51,7 +49,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("All fields with URL [JSON]")
     public void allFieldsURLJSON() throws IOException {
-        License license = jsonMapper.readValue(getClass().getResource(allFieldsURLJSON), License.class);
+        License license = Parser.parseJSON(getClass().getResource(allFieldsURLJSON), License.class);
         validateAllFieldsURL(license);
     }
 
@@ -59,7 +57,7 @@ public class    LicenseTest {
     @Tag("YAML")
     @DisplayName("All fields with URL [YAML]")
     public void allFieldsURLYAML() throws IOException {
-        License license = yamlMapper.readValue(getClass().getResource(allFieldsURLYAML), License.class);
+        License license = Parser.parseYAML(getClass().getResource(allFieldsURLYAML), License.class);
         validateAllFieldsURL(license);
     }
 
@@ -67,7 +65,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("All fields with Identifier [JSON]")
     public void allFieldsIdentifierJSON() throws IOException {
-        License license = jsonMapper.readValue(getClass().getResource(allFieldsIdentifierJSON), License.class);
+        License license = Parser.parseJSON(getClass().getResource(allFieldsIdentifierJSON), License.class);
         validateAllFieldsIdentifier(license);
     }
 
@@ -75,7 +73,7 @@ public class    LicenseTest {
     @Tag("YAML")
     @DisplayName("All fields with Identifier [YAML]")
     public void allFieldsIdentifierYAML() throws IOException {
-        License license = yamlMapper.readValue(getClass().getResource(allFieldsIdentifierYAML), License.class);
+        License license = Parser.parseYAML(getClass().getResource(allFieldsIdentifierYAML), License.class);
         validateAllFieldsIdentifier(license);
     }
 
@@ -83,7 +81,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("Mandatory fields")
     public void mandatoryFields() throws IOException {
-        License license = jsonMapper.readValue(getClass().getResource(mandatoryFields), License.class);
+        License license = Parser.parseJSON(getClass().getResource(mandatoryFields), License.class);
         validateMandatoryFields(license);
     }
 
@@ -91,7 +89,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        License license = jsonMapper.readValue(getClass().getResource(missingFields), License.class);
+        License license = Parser.parseJSON(getClass().getResource(missingFields), License.class);
         Set<ConstraintViolation<License>> violations = validator.validate(license);
         validateMissingFields(violations);
     }
@@ -100,7 +98,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUrl), License.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), License.class));
         assertThat(exception.getValue(), is("license"));
         assertThat(exception.getTargetType(), is(URL.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));
@@ -110,7 +108,7 @@ public class    LicenseTest {
     @Tag("JSON")
     @DisplayName("'url' and 'identifier' are mutually exclusive")
     public void UrlAndIdentifier() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(URLAndIdentifier), License.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(URLAndIdentifier), License.class));
         assertThat(exception.getType().getRawClass(), is(License.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("A license can't have both an identifier and a url"));
@@ -136,4 +134,5 @@ public class    LicenseTest {
         assertThat(violation.getConstraintDescriptor().getMessageTemplate(), is("{javax.validation.constraints.NotNull.message}"));
         assertThat(violation.getPropertyPath().toString(), is("name"));
     }
+
 }

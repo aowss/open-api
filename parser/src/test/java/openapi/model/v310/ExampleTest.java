@@ -1,14 +1,15 @@
 package openapi.model.v310;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import openapi.parser.Parser;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -32,9 +33,6 @@ public class ExampleTest {
     static String valueAndExternalValue = "/Example/value-externalValue.json";
     static String invalidUri = "/Example/invalid-uri.json";
 
-    static final ObjectMapper jsonMapper = new ObjectMapper();
-    static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
     private static Validator validator;
 
     @BeforeAll
@@ -47,7 +45,7 @@ public class ExampleTest {
     @Tag("JSON")
     @DisplayName("All fields with 'value' [JSON]")
     public void allFieldsURLJSON() throws IOException {
-        Example example = jsonMapper.readValue(getClass().getResource(allFieldsURLJSON), Example.class);
+        Example example = Parser.parseJSON(getClass().getResource(allFieldsURLJSON), Example.class);
         validateAllFieldsValue(example);
     }
 
@@ -55,7 +53,7 @@ public class ExampleTest {
     @Tag("YAML")
     @DisplayName("All fields with 'value' [YAML]")
     public void allFieldsURLYAML() throws IOException {
-        Example example = yamlMapper.readValue(getClass().getResource(allFieldsURLYAML), Example.class);
+        Example example = Parser.parseYAML(getClass().getResource(allFieldsURLYAML), Example.class);
         validateAllFieldsValue(example);
     }
 
@@ -63,7 +61,7 @@ public class ExampleTest {
     @Tag("JSON")
     @DisplayName("All fields with 'externalValue' [JSON]")
     public void allFieldsIdentifierJSON() throws IOException, URISyntaxException {
-        Example example = jsonMapper.readValue(getClass().getResource(allFieldsIdentifierJSON), Example.class);
+        Example example = Parser.parseJSON(getClass().getResource(allFieldsIdentifierJSON), Example.class);
         validateAllFieldsExternalValue(example);
     }
 
@@ -71,7 +69,7 @@ public class ExampleTest {
     @Tag("YAML")
     @DisplayName("All fields with 'externalValue' [YAML]")
     public void allFieldsIdentifierYAML() throws IOException, URISyntaxException {
-        Example example = yamlMapper.readValue(getClass().getResource(allFieldsIdentifierYAML), Example.class);
+        Example example = Parser.parseYAML(getClass().getResource(allFieldsIdentifierYAML), Example.class);
         validateAllFieldsExternalValue(example);
     }
 
@@ -79,7 +77,7 @@ public class ExampleTest {
     @Tag("JSON")
     @DisplayName("'value' and 'externalValue' are mutually exclusive")
     public void UrlAndIdentifier() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> jsonMapper.readValue(getClass().getResource(valueAndExternalValue), Example.class));
+        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(valueAndExternalValue), Example.class));
         assertThat(exception.getType().getRawClass(), is(Example.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("An 'example' Object can't have both a 'value' and an 'externalValue' field"));
@@ -89,7 +87,7 @@ public class ExampleTest {
     @Tag("JSON")
     @DisplayName("invalid 'uri' field")
     public void invalidUri() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> jsonMapper.readValue(getClass().getResource(invalidUri), Example.class));
+        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidUri), Example.class));
         assertThat(exception.getValue(), is("external value"));
         assertThat(exception.getTargetType(), is(URI.class));
         assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("externalValue"));
