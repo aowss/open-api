@@ -5,6 +5,7 @@
 The project is structured as follows :
 
 * [Model](./model)
+* [Parser](./parser)
 
 ## Pre-requisites
 

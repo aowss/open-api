@@ -19,9 +19,9 @@ import java.net.URL;
 
 public class Parser {
 
-    public static final ObjectMapper jsonMapper = new ObjectMapper();
-    public static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-    public static final Validator factory = Validation.buildDefaultValidatorFactory().getValidator();
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private static final Validator factory = Validation.buildDefaultValidatorFactory().getValidator();
 
     static {
         //  Didn't manage to make the mixin work with records
