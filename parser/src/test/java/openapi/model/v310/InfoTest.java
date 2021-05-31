@@ -1,28 +1,19 @@
 package openapi.model.v310;
 
+import openapi.parser.InvalidValueException;
+import openapi.parser.MissingValueException;
 import openapi.parser.Parser;
+import openapi.parser.ParsingException;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
-import static java.util.stream.Collectors.joining;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Info Object : https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#info-object")
@@ -37,18 +28,10 @@ public class InfoTest {
     static String invalidTermsOfServiceJSON = "/Info/invalid-termsOfService.json";
     static String invalidTermsOfServiceYAML = "/Info/invalid-termsOfService.yaml";
 
-    private static Validator validator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
-    public void allFieldsJSON() throws IOException {
+    public void allFieldsJSON() throws IOException, ParsingException {
         Info info = Parser.parseJSON(getClass().getResource(allFieldsJSON), Info.class);
         validateAllFields(info);
     }
@@ -56,7 +39,7 @@ public class InfoTest {
     @Test
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
-    public void allFieldsYAML() throws IOException {
+    public void allFieldsYAML() throws IOException, ParsingException {
         Info info = Parser.parseYAML(getClass().getResource(allFieldsYAML), Info.class);
         validateAllFields(info);
     }
@@ -64,7 +47,7 @@ public class InfoTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields [JSON]")
-    public void mandatoryFieldsJSON() throws IOException {
+    public void mandatoryFieldsJSON() throws IOException, ParsingException {
         Info info = Parser.parseJSON(getClass().getResource(mandatoryFieldsJSON), Info.class);
         validateMandatoryFields(info);
     }
@@ -72,7 +55,7 @@ public class InfoTest {
     @Test
     @Tag("YAML")
     @DisplayName("Mandatory fields [YAML]")
-    public void mandatoryFieldsYAML() throws IOException {
+    public void mandatoryFieldsYAML() throws IOException, ParsingException {
         Info info = Parser.parseYAML(getClass().getResource(mandatoryFieldsYAML), Info.class);
         validateMandatoryFields(info);
     }
@@ -80,39 +63,33 @@ public class InfoTest {
     @Test
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields [JSON]")
-    public void missingFieldsJSON() throws IOException {
-        Info info = Parser.parseJSON(getClass().getResource(missingFieldsJSON), Info.class);
-        Set<ConstraintViolation<Info>> violations = validator.validate(info);
-        validateMissingFields(violations);
+    public void missingFieldsJSON() {
+        MissingValueException exception = assertThrows(MissingValueException.class, () -> Parser.parseJSON(getClass().getResource(missingFieldsJSON), Info.class));
+        validateMissingFields(exception);
     }
 
     @Test
     @Tag("YAML")
     @DisplayName("Missing Mandatory fields [YAML]")
-    public void missingFieldsYAML() throws IOException {
-        Info info = Parser.parseYAML(getClass().getResource(missingFieldsYAML), Info.class);
-        Set<ConstraintViolation<Info>> violations = validator.validate(info);
-        validateMissingFields(violations);
+    public void missingFieldsYAML() {
+        MissingValueException exception = assertThrows(MissingValueException.class, () -> Parser.parseYAML(getClass().getResource(missingFieldsYAML), Info.class));
+        validateMissingFields(exception);
     }
 
     @Test
     @Tag("JSON")
     @DisplayName("invalid 'termsOfService' field: wrong type [JSON]")
     public void invalidTermsOfServiceJSON() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidTermsOfServiceJSON), Info.class));
-        assertThat(exception.getValue(), is("terms"));
-        assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("termsOfService"));
+        InvalidValueException exception = assertThrows(InvalidValueException.class, () -> Parser.parseJSON(getClass().getResource(invalidTermsOfServiceJSON), Info.class));
+        validateInvalidFields(exception);
     }
 
     @Test
     @Tag("YAML")
     @DisplayName("invalid 'termsOfService' field: wrong type [YAML]")
     public void invalidTermsOfServiceYAML() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseYAML(getClass().getResource(invalidTermsOfServiceYAML), Info.class));
-        assertThat(exception.getValue(), is("terms"));
-        assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("termsOfService"));
+        InvalidValueException exception = assertThrows(InvalidValueException.class, () -> Parser.parseYAML(getClass().getResource(invalidTermsOfServiceYAML), Info.class));
+        validateInvalidFields(exception);
     }
 
     public void validateAllFields(Info info) throws MalformedURLException {
@@ -130,19 +107,14 @@ public class InfoTest {
         assertThat(info.version(), is("1.0.1"));
     }
 
-    public void validateMissingFields(Set<ConstraintViolation<Info>> violations) {
-        assertThat(violations.size(), is(2));
-
-        var constraints = violations.stream()
-                .map(violation -> violation.getConstraintDescriptor().getMessageTemplate())
-                .distinct()
-                .collect(Collectors.toList());
-        assertThat(constraints, is(List.of("{javax.validation.constraints.NotNull.message}")));
-
-        var fields = violations.stream()
-                .map(violation -> violation.getPropertyPath().toString())
-                .collect(Collectors.toList());
-        assertThat(fields, containsInAnyOrder(new String[] { "title", "version" }));
+    public void validateMissingFields(MissingValueException exception) {
+        assertThat(exception.getPaths(), containsInAnyOrder(new String[] {"title", "version"}));
+        assertThat(exception.getMessage(), is(in(new String[] {"The value(s) at location(s) 'title, version' is/are required", "The value(s) at location(s) 'version, title' is/are required"})));
     }
 
+    public void validateInvalidFields(InvalidValueException exception) {
+        assertThat(exception.getInvalidValue(), is("terms"));
+        assertThat(exception.getPath(), is("termsOfService"));
+        assertThat(exception.getExpectedType(), is("URL"));
+    }
 }

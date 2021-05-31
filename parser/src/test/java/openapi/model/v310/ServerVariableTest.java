@@ -1,18 +1,15 @@
 package openapi.model.v310;
 
+import openapi.parser.MissingValueException;
 import openapi.parser.Parser;
+import openapi.parser.ParsingException;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -30,18 +27,10 @@ public class ServerVariableTest {
     static String mandatoryFields = "/ServerVariable/mandatory-fields.json";
     static String missingFields = "/ServerVariable/missing-fields.json";
 
-    private static Validator validator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
-    public void allFieldsJSON() throws IOException {
+    public void allFieldsJSON() throws IOException, ParsingException {
         ServerVariable serverVariable = Parser.parseJSON(getClass().getResource(allFieldsJSON), ServerVariable.class);
         validateAllFields(serverVariable);
     }
@@ -49,7 +38,7 @@ public class ServerVariableTest {
     @Test
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
-    public void allFieldsYAML() throws IOException {
+    public void allFieldsYAML() throws IOException, ParsingException {
         ServerVariable serverVariable = Parser.parseYAML(getClass().getResource(allFieldsYAML), ServerVariable.class);
         validateAllFields(serverVariable);
     }
@@ -57,7 +46,7 @@ public class ServerVariableTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields")
-    public void mandatoryFields() throws IOException {
+    public void mandatoryFields() throws IOException, ParsingException {
         ServerVariable serverVariable = Parser.parseJSON(getClass().getResource(mandatoryFields), ServerVariable.class);
         assertThat(serverVariable.defaultValue(), is("8443"));
     }
@@ -66,9 +55,8 @@ public class ServerVariableTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        ServerVariable serverVariable = Parser.parseJSON(getClass().getResource(missingFields), ServerVariable.class);
-        Set<ConstraintViolation<ServerVariable>> violations = validator.validate(serverVariable);
-        validateMissingFields(violations);
+        MissingValueException exception = assertThrows(MissingValueException.class, () -> Parser.parseJSON(getClass().getResource(missingFields), ServerVariable.class));
+        assertThat(exception.getPaths(), is(List.of("defaultValue")));
     }
 
     @Test
@@ -99,13 +87,6 @@ public class ServerVariableTest {
         assertThat(serverVariable.enums(), contains("8443", "443"));
         assertThat(serverVariable.defaultValue(), is("8443"));
         assertThat(serverVariable.description(), is("the port number"));
-    }
-
-    public void validateMissingFields(Set<ConstraintViolation<ServerVariable>> violations) {
-        assertThat(violations.size(), is(1));
-        var violation = violations.iterator().next();
-        assertThat(violation.getConstraintDescriptor().getMessageTemplate(), is("{javax.validation.constraints.NotNull.message}"));
-        assertThat(violation.getPropertyPath().toString(), is("defaultValue"));
     }
 
 }

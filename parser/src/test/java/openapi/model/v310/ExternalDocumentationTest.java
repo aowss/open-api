@@ -1,25 +1,19 @@
 package openapi.model.v310;
 
+import openapi.parser.InvalidValueException;
+import openapi.parser.MissingValueException;
 import openapi.parser.Parser;
+import openapi.parser.ParsingException;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
 
-import static java.util.stream.Collectors.joining;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,18 +27,10 @@ public class ExternalDocumentationTest {
     static String missingFields = "/ExternalDocumentation/missing-fields.json";
     static String invalidUrl = "/ExternalDocumentation/invalid-url.json";
 
-    private static Validator validator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
-    public void allFieldsJSON() throws IOException {
+    public void allFieldsJSON() throws IOException, ParsingException {
         ExternalDocumentation externalDocumentation = Parser.parseJSON(getClass().getResource(allFieldsJSON), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
     }
@@ -52,7 +38,7 @@ public class ExternalDocumentationTest {
     @Test
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
-    public void allFieldsYAML() throws IOException {
+    public void allFieldsYAML() throws IOException, ParsingException {
         ExternalDocumentation externalDocumentation = Parser.parseYAML(getClass().getResource(allFieldsYAML), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
     }
@@ -60,7 +46,7 @@ public class ExternalDocumentationTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields")
-    public void mandatoryFields() throws IOException {
+    public void mandatoryFields() throws IOException, ParsingException {
         ExternalDocumentation externalDocumentation = Parser.parseJSON(getClass().getResource(mandatoryFields), ExternalDocumentation.class);
         validateMandatoryFields(externalDocumentation);
     }
@@ -68,20 +54,19 @@ public class ExternalDocumentationTest {
     @Test
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
-    public void missingFields() throws IOException {
-        ExternalDocumentation externalDocumentation = Parser.parseJSON(getClass().getResource(missingFields), ExternalDocumentation.class);
-        Set<ConstraintViolation<ExternalDocumentation>> violations = validator.validate(externalDocumentation);
-        validateMissingFields(violations);
+    public void missingFields() {
+        MissingValueException exception = assertThrows(MissingValueException.class, () -> Parser.parseJSON(getClass().getResource(missingFields), ExternalDocumentation.class));
+        assertThat(exception.getPaths(), is(List.of("url")));
     }
 
     @Test
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), ExternalDocumentation.class));
-        assertThat(exception.getValue(), is("externalDocumentation"));
-        assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));
+        InvalidValueException exception = assertThrows(InvalidValueException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), ExternalDocumentation.class));
+        assertThat(exception.getInvalidValue(), is("externalDocumentation"));
+        assertThat(exception.getPath(), is("url"));
+        assertThat(exception.getExpectedType(), is("URL"));
     }
 
     public void validateAllFields(ExternalDocumentation externalDocumentation) throws MalformedURLException {
@@ -91,13 +76,6 @@ public class ExternalDocumentationTest {
 
     public void validateMandatoryFields(ExternalDocumentation externalDocumentation) throws MalformedURLException {
         assertThat(externalDocumentation.url(), is(new URL("https://example.com/externalDocumentation")));
-    }
-
-    public void validateMissingFields(Set<ConstraintViolation<ExternalDocumentation>> violations) {
-        assertThat(violations.size(), is(1));
-        var violation = violations.iterator().next();
-        assertThat(violation.getConstraintDescriptor().getMessageTemplate(), is("{javax.validation.constraints.NotNull.message}"));
-        assertThat(violation.getPropertyPath().toString(), is("url"));
     }
 
 }

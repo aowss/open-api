@@ -1,23 +1,16 @@
 package openapi.model.v310;
 
+import openapi.parser.InvalidValueException;
 import openapi.parser.Parser;
+import openapi.parser.ParsingException;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
 
-import static java.util.stream.Collectors.joining;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,18 +23,10 @@ public class ContactTest {
     static String invalidUrl = "/Contact/invalid-url.json";
     static String invalidEmail = "/Contact/invalid-email.json";
 
-    private static Validator validator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
-    public void allFieldsJSON() throws IOException {
+    public void allFieldsJSON() throws IOException, ParsingException {
         Contact contact = Parser.parseJSON(getClass().getResource(allFieldsJSON), Contact.class);
         validateAllFields(contact);
     }
@@ -49,7 +34,7 @@ public class ContactTest {
     @Test
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
-    public void allFieldsYAML() throws IOException {
+    public void allFieldsYAML() throws IOException, ParsingException {
         Contact contact = Parser.parseYAML(getClass().getResource(allFieldsYAML), Contact.class);
         validateAllFields(contact);
     }
@@ -57,24 +42,22 @@ public class ContactTest {
     @Test
     @Tag("JSON")
     @DisplayName("Invalid 'email' field: doesn't conform to Email annotation")
-    public void invalidEmail() throws IOException {
-        Contact contact = Parser.parseJSON(getClass().getResource(invalidEmail), Contact.class);
-        Set<ConstraintViolation<Contact>> violations = validator.validate(contact);
-        assertThat(violations.size(), is(1));
-        var violation = violations.iterator().next();
-        assertThat(violation.getInvalidValue(), is("support"));
-        assertThat(violation.getPropertyPath().toString(), is("email"));
-        assertThat(violation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName(), is("Email"));
+    public void invalidEmail() {
+        InvalidValueException exception = assertThrows(InvalidValueException.class, () -> Parser.parseJSON(getClass().getResource(invalidEmail), Contact.class));
+        assertThat(exception.getInvalidValue(), is("support"));
+        assertThat(exception.getPath(), is("email"));
+        assertThat(exception.getExpectedType(), is("Email"));
+        assertThat(exception.getMessage(), is("The value 'support' at location 'email' is invalid: it should be a 'Email'"));
     }
 
     @Test
     @Tag("JSON")
     @DisplayName("invalid 'url' field: wrong type")
     public void invalidUrl() {
-        InvalidFormatException exception = assertThrows(InvalidFormatException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), Contact.class));
-        assertThat(exception.getValue(), is("support"));
-        assertThat(exception.getTargetType(), is(URL.class));
-        assertThat(exception.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(joining(".")), is("url"));
+        InvalidValueException exception = assertThrows(InvalidValueException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), Contact.class));
+        assertThat(exception.getInvalidValue(), is("support"));
+        assertThat(exception.getPath(), is("url"));
+        assertThat(exception.getExpectedType(), is("URL"));
     }
 
     public void validateAllFields(Contact contact) throws MalformedURLException {

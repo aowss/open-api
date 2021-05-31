@@ -1,23 +1,20 @@
 package openapi.model.v310;
 
+import openapi.parser.MissingValueException;
 import openapi.parser.Parser;
+import openapi.parser.ParsingException;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Server Object : https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#server-object")
@@ -31,18 +28,10 @@ public class ServerTest {
     static String invalidUrl = "/Server/invalid-url.json";
     static String invalidUrlAfterSubstitution = "/Server/invalid-url-substitution.json";
 
-    private static Validator validator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
-    public void allFieldsJSON() throws IOException {
+    public void allFieldsJSON() throws IOException, ParsingException {
         Server server = Parser.parseJSON(getClass().getResource(allFieldsJSON), Server.class);
         validateAllFields(server);
     }
@@ -50,7 +39,7 @@ public class ServerTest {
     @Test
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
-    public void allFieldsYAML() throws IOException {
+    public void allFieldsYAML() throws IOException, ParsingException {
         Server server = Parser.parseYAML(getClass().getResource(allFieldsYAML), Server.class);
         validateAllFields(server);
     }
@@ -58,7 +47,7 @@ public class ServerTest {
     @Test
     @Tag("JSON")
     @DisplayName("Mandatory fields")
-    public void mandatoryFields() throws IOException {
+    public void mandatoryFields() throws IOException, ParsingException {
         Server server = Parser.parseJSON(getClass().getResource(mandatoryFields), Server.class);
         validateMandatoryFields(server);
     }
@@ -67,16 +56,16 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("Missing Mandatory fields")
     public void missingFields() throws IOException {
-        Server server = Parser.parseJSON(getClass().getResource(missingFields), Server.class);
-        Set<ConstraintViolation<Server>> violations = validator.validate(server);
-        validateMissingFields(violations);
+        MissingValueException exception = assertThrows(MissingValueException.class, () -> Parser.parseJSON(getClass().getResource(missingFields), Server.class));
+        assertThat(exception.getPaths(), is(List.of("url")));
     }
 
     @Test
     @Tag("JSON")
     @DisplayName("invalid 'url' field")
     public void invalidUrl() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), Server.class));
+        ParsingException exception = assertThrows(ParsingException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrl), Server.class));
+        assertThat(exception.getMessage(), startsWith("Cannot construct instance of `openapi.model.v310.Server`, problem: The 'url' field is not a valid URL"));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
     }
@@ -85,7 +74,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("invalid 'url' field after substitution")
     public void invalidUrlAfterSubstitution() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrlAfterSubstitution), Server.class));
+        ParsingException exception = assertThrows(ParsingException.class, () -> Parser.parseJSON(getClass().getResource(invalidUrlAfterSubstitution), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field is not a valid URL"));
     }
@@ -94,7 +83,7 @@ public class ServerTest {
     @Tag("JSON")
     @DisplayName("missing variable in 'url' substitution")
     public void invalidSubstitution() {
-        ValueInstantiationException exception = assertThrows(ValueInstantiationException.class, () -> Parser.parseJSON(getClass().getResource(invalidSubstitution), Server.class));
+        ParsingException exception = assertThrows(ParsingException.class, () -> Parser.parseJSON(getClass().getResource(invalidSubstitution), Server.class));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("The 'url' field uses substitution variables that are not defined in the 'variables' field"));
     }
@@ -108,13 +97,6 @@ public class ServerTest {
 
     public void validateMandatoryFields(Server server) throws MalformedURLException {
         assertThat(server.url(), is("https://development.gigantic-server.com/v1"));
-    }
-
-    public void validateMissingFields(Set<ConstraintViolation<Server>> violations) {
-        assertThat(violations.size(), is(1));
-        var violation = violations.iterator().next();
-        assertThat(violation.getConstraintDescriptor().getMessageTemplate(), is("{javax.validation.constraints.NotNull.message}"));
-        assertThat(violation.getPropertyPath().toString(), is("url"));
     }
 
 }

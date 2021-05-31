@@ -6,15 +6,12 @@ import openapi.model.v310.security.oauth.Implicit;
 import openapi.model.v310.security.oauth.OAuthFlowType;
 
 import openapi.parser.Parser;
+import openapi.parser.ParsingException;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,14 +27,6 @@ public class OpenApiTest {
     static String allFieldsJSON = "/Full/all-fields.json";
     static String allFieldsYAML = "/Full/all-fields.yaml";
 
-    private static Validator validator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
 //    @Test
 //    @Tag("JSON")
 //    @DisplayName("All fields [JSON]")
@@ -49,7 +38,7 @@ public class OpenApiTest {
     @Test
     @Tag("YAML")
     @DisplayName("All fields [YAML]")
-    public void allFieldsYAML() throws IOException {
+    public void allFieldsYAML() throws IOException, ParsingException {
         OpenApi openApi = Parser.parseYAML(getClass().getResource(allFieldsYAML), OpenApi.class);
         validateAllFields(openApi);
     }
