@@ -15,4 +15,9 @@ import java.net.URL;
  * @param version        The version of the OpenAPI document (which is distinct from the OpenAPI Specification version or the API implementation version).
  */
 public record Info(@NotNull String title, String summary, String description, URL termsOfService, Contact contact, License license, @NotNull String version) {
+
+    public Info(@NotNull String title, @NotNull String version) {
+        this(title, null, null, null, null, null, version);
+    }
+
 }

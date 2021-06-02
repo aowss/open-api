@@ -1,0 +1,365 @@
+:toc:
+:toclevels: 4
+:source-highlighter: rouge
+
+= Model
+
+This is a Java representation of the https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#specification[OpenAPI Specification].
+
+*The model doesn't contain any serialization annotation.* +
+Serialization / Deserialization is the job of the link:../parser[Parser].
+
+== Builders
+
+Should we use builders ?
+
+"Consider a builder when faced with many constructor parameters"
+-- Joshua Bloch, https://www.informit.com/store/effective-java-9780134685991[Effective Java Third Edition]
+
+Not that the typical immutability perk that comes with the builder pattern is of no need here since records are immutable on their own.
+
+=== No builder
+
+[source, java]
+.Record
+----
+public record Info(@NotNull String title, String summary, String description, URL termsOfService, Contact contact, License license, @NotNull String version) { } <1>
+----
+<1> You don't get more concise than that!
+
+[source, java]
+.Client
+----
+//  All fields
+var contact = new Contact("name", new URL(...), "email");
+var license = new License("name", "identifier");
+var info = new Info("title", "summary", "description", new URL("..."), contact, license, "version"); <1>
+
+//  Required fields only
+var info = new Info("title", null, null, null, null, null, "version"); <2>
+
+//  One optional field
+var info = new Info("title", null, "description", null, null, null, "version"); <2>
+----
+<1> You don't know what each value means
+<2> You have to pass `null` for each optional parameter
+
+=== With a hand-written builder
+
+==== Within the record
+
+[[builder]]
+[source, java]
+.Record
+----
+public record Info(@NotNull String title, String summary, String description, URL termsOfService, Contact contact, License license, @NotNull String version) {
+
+    public static class Builder { <1>
+
+        private final String title;
+        private String summary;
+        private String description;
+        private URL termsOfService;
+        private Contact contact;
+        private License license;
+        private final String version;
+
+        public Builder(String title, String version) {
+            this.title = title;
+            this.version = version;
+        }
+
+        public Builder summary(String summary) {
+            this.summary = summary;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder termsOfService(URL termsOfService) {
+            this.termsOfService = termsOfService;
+            return this;
+        }
+
+        public Builder contact(Contact contact) {
+            this.contact = contact;
+            return this;
+        }
+
+        public Builder license(License license) {
+            this.license = license;
+            return this;
+        }
+
+        public Info build() {
+            return new Info(this);
+        }
+
+    }
+
+    private Info(Builder builder) {
+        this(builder.title, builder.summary, builder.description, builder.termsOfService, builder.contact, builder.license, builder.version);
+    }
+
+}
+----
+<1> The readability is lost. +
+Most of this code is just noise!
+
+[[client-builder]]
+[source, java]
+.Client
+----
+//  All fields
+var contact = new Contact("name", new URL(...), "email");
+var license = new License("name", "identifier");
+var info = new Info.Builder("title", "version") <1>
+    .summary("summary") <2>
+    .description("description") <2>
+    .termsOfService(new URL("...")) <2>
+    .contact(contact) <2>
+    .license(license) <2>
+    .build();
+
+//  Required fields only
+var info = new Info.Builder("title", "version").build(); <3> <4>
+
+//  One optional field
+var info = new Info.Builder("title", "version")
+    .description("description") <2>
+    .build(); <3>
+----
+<1> The mandatory parameters must be passed to the builder
+<2> The meaning of each value is very clear
+<3> That's pretty concise!
+<4> This can be achieved by adding an `Info` constructor with just 2 parameters.
+
+==== Outside the record
+
+[source, java]
+.Record
+----
+public record Info(@NotNull String title, String summary, String description, URL termsOfService, Contact contact, License license, @NotNull String version) { } <1>
+----
+<1> The record stays unchanged!
+
+[source, java]
+.Builder
+----
+package openapi.model.v310.builder;
+
+public class InfoBuilder { <1>
+
+    private final String title;
+    private String summary;
+    private String description;
+    private URL termsOfService;
+    private Contact contact;
+    private License license;
+    private final String version;
+
+    public InfoBuilder(String title, String version) {
+        this.title = title;
+        this.version = version;
+    }
+
+    public InfoBuilder summary(String summary) {
+        this.summary = summary;
+        return this;
+    }
+
+    public InfoBuilder description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public InfoBuilder termsOfService(URL termsOfService) {
+        this.termsOfService = termsOfService;
+        return this;
+    }
+
+    public InfoBuilder contact(Contact contact) {
+        this.contact = contact;
+        return this;
+    }
+
+    public InfoBuilder license(License license) {
+        this.license = license;
+        return this;
+    }
+
+    public Info build() {
+        return new Info(this.title, this.summary, this.description, this.termsOfService, this.contact, this.license, this.version);
+    }
+
+}
+----
+<1> The builder is now a standalone class. +
+It is still a lot of noise but at least it is not part of the record.
+
+[source, java]
+.Client
+----
+//  All fields
+var contact = new Contact("name", new URL(...), "email");
+var license = new License("name", "identifier");
+var info = new InfoBuilder("title", "version") <1>
+    .summary("summary")
+    .description("description")
+    .termsOfService(new URL("..."))
+    .contact(contact)
+    .license(license)
+    .build();
+
+//  Required fields only
+var info = new InfoBuilder("title", "version").build(); <1>
+
+//  One optional field
+var info = new InfoBuilder("title", "version") <1>
+    .description("description")
+    .build();
+----
+<1> The only difference between this code and the xref:client-builder[previous one] is that we use `new InfoBuilder` instead of `new Info.Builder` since the builder is now outside the record.
+
+=== With a generated builder
+
+.Records won't get built-in builders
+"If some project out there wants to have code generators for patterns that are sometimes useful for records, that’s great — but that’s not where the language should be focusing."
+-- Brain Goetz, http://openjdk.5641.n7.nabble.com/Builder-pattern-for-Java-records-tp465207p465375.html[Re: Builder pattern for Java records ]
+
+==== Using https://projectlombok.org/[Lombok]
+
+[source, xml]
+.`pom.xml`
+----
+<project>
+
+    <properties>
+        <lombok.version>1.18.20</lombok.version>
+    </properties>
+
+    <dependencies>
+        <dependency> <!--1-->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>model</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <annotationProcessorPath> <!--2-->
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </annotationProcessorPath>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+----
+<1> Add the `Lombok` dependency
+<2> Configure the compiler plugin to use it
+
+As mentioned in https://softwaregarden.dev/en/posts/new-java/records/vs-lombok-yet-again-with-builder-pattern/[this post], it is possible to annotate the constructor and generate the builder automatically.
+
+[source, java]
+.Record
+----
+public record Info(@NotNull String title, String summary, String description, URL termsOfService, Contact contact, License license, @NotNull String version) {
+
+    @Builder(builderMethodName = "hiddenBuilder") <1>
+    public Info {} <2>
+
+    public static InfoBuilder builder(String title, String version) { <3>
+        return hiddenBuilder().title(title).version(version);
+    }
+
+}
+----
+<1> [blue]#The https://projectlombok.org/features/Builder[`Builder`] annotation with the hidden builder will generate a builder very similar to the xref:builder[hand-written builder].#
+The client code will therefore be very similar to the xref:client-builder[builder's client code] footnote:[The only difference is that it will instantiate the builder using `Info.builder(...)` instead of `new Info.Builder(...)`]. +
+[red]#*The problem is that the model is now annotated with a non-standard Java annotation*#.
+<2> For this to work, you have to create a compact constructor.
+<3> For this to work, you have to add this `builder` factory method footnote:[This is very similar to adding an `Info` constructor with just 2 parameters].
+
+==== Using https://github.com/Randgalt/record-builder[RecordBuilder]
+
+[source, xml]
+----
+<project>
+
+    <properties>
+        <builder.version>1.19</builder.version>
+    </properties>
+
+    <dependencies>
+        <dependency> <!--1-->
+            <groupId>io.soabase.record-builder</groupId>
+            <artifactId>record-builder-core</artifactId>
+            <version>${builder.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>model</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <annotationProcessorPath> <!--2-->
+                            <groupId>io.soabase.record-builder</groupId>
+                            <artifactId>record-builder-processor</artifactId>
+                            <version>${builder.version}</version>
+                        </annotationProcessorPath>
+                    </annotationProcessorPaths>
+                    <annotationProcessors> <!--2-->
+                        <annotationProcessor>io.soabase.recordbuilder.processor.RecordBuilderProcessor</annotationProcessor>
+                    </annotationProcessors>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+----
+<1> Add the `RecordBuilder` dependency
+<2> Configure the compiler plugin to use it
+
+As mentioned https://github.com/Randgalt/record-builder#generation-via-includes[here], this library allows us to generate the builder without annotating the model.
+
+[source, java]
+.Builder generator
+----
+@RecordBuilder.Include({Info.class})
+public class OpenApiBuilder { <1>
+}
+----
+<1> [blue]#*Even though the model is not annotated*#, this class has to be added. +
+[red]#*This doesn't generate a builder with the mandatory parameters.*#
+
+== To Do
+
+* Should we use a custom implementation that returns an `Optional` or should we pass `Optional` to the record or should we leave it this way ?
+
+* What should be done with https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#specificationExtensions[Specification Extensions] ?
+
+* Should we continue using the https://beanvalidation.org/[Bean Validation API] ?
