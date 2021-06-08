@@ -4,10 +4,33 @@
 
 = Model
 
+****
+The HTML version of this document is generated using https://asciidoctor.org/[Asciidoctor]. +
+The following extensions are used:
+
+* https://asciidoctor.org/docs/asciidoctor-diagram/[the diagram extension],
+* https://github.com/hsanson/asciidoctor-plantuml[the PlantUML extension],
+* https://github.com/jirutka/asciidoctor-rouge[the Rouge source highlighting extension]
+
+The command is: `asciidoctor -r asciidoctor-diagram *.adoc`.
+****
+
 This is a Java representation of the https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#specification[OpenAPI Specification].
 
 *The model doesn't contain any serialization annotation.* +
 Serialization / Deserialization is the job of the link:../parser[Parser].
+
+[mermaid, Model-Mermaid, svg]
+.https://mermaid-js.github.io/mermaid/#/[Mermaid] version
+....
+include::Model.mmd[]
+....
+
+[plantuml, Model-PlantUML, svg]
+.https://plantuml.com/[PlantUML] version
+....
+include::Model.puml[]
+....
 
 == Builders
 

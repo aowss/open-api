@@ -1,0 +1,300 @@
+@startuml
+
+' hide the spot
+hide circle
+
+hide methods
+
+' avoid problems with angled crows feet
+' skinparam linetype ortho
+
+entity OpenAPI {
+    * String openapi
+    URI jsonSchemaDialect
+    List<Map<String, List<String>>> security
+}
+
+entity Info #LightPink {
+    * String title
+    String summary
+    String description
+    URL termsOfService
+    * String version
+}
+
+entity Contact #LightPink {
+    String name
+    URL url
+    String email
+}
+
+entity License #LightPink {
+    * String name
+    String identifier
+    URL url
+}
+
+entity Server #LightPink {
+    * String url
+    String description
+}
+
+entity ServerVariable #LightPink {
+    List<String> enum
+    * String default
+    String description
+}
+
+entity PathItem {
+    String summary
+    String description
+}
+
+entity Operation {
+    List<String> tags
+    String summary
+    String description
+    String operationId
+    Boolean deprecated
+    List<Map<String, List<String>>> security
+}
+
+entity ExternalDocumentation #LightPink {
+    String description
+    * URL url
+}
+
+entity Parameter {
+    * String name
+    * Location in
+    String description
+    Boolean required
+    Boolean deprecated
+    Boolean allowEmptyValue
+    Style style
+    Boolean explode
+    Boolean allowReserved
+    Object example
+}
+
+entity Schema {
+    Object example
+}
+
+entity Discriminator #LightPink {
+    * String propertyName
+    Map<String, String> mapping
+}
+
+entity XML {
+    String name
+    URI namespace
+    String prefix
+    Boolean attribute
+    Boolean wrapped
+}
+
+entity Example #LightPink {
+    String summary
+    String description
+    Object value
+    URI externalValue
+}
+
+entity MediaType {
+    Object example
+}
+
+entity Encoding {
+    String contentType
+    Style style
+    Boolean explode
+    Boolean allowReserved
+}
+
+entity Header {
+    String description
+    Boolean required
+    Boolean deprecated
+    Style style
+    Boolean explode
+    Boolean allowReserved
+    Object example
+}
+
+entity RequestBody {
+    String description
+    Boolean required
+}
+
+entity Response {
+    * String description
+}
+
+entity Link {
+    String operationRef
+    String operationId
+    Map<String, String> parameters
+    Object requestBody
+    String description
+}
+
+interface SecurityScheme {
+    * Type type
+}
+
+entity ApiKey {
+    String description
+    * String name
+    * Location in
+}
+
+entity Http {
+    String description
+    * Scheme scheme
+    String bearerFormat
+}
+
+entity MutualTLS {
+    String description
+}
+
+entity OAuth2 {
+    String description
+}
+
+'entity OAuthFlow {
+'    URL authorizationUrl
+'    URL tokenUrl
+'    URL refreshUrl
+'    Map<String, String> scopes
+'}
+
+interface OAuthFlow {
+}
+
+entity OAuth2 {
+    String description
+}
+
+entity Implicit {
+    * URL authorizationUrl
+    URL refreshUrl
+    * Map<String, String> scopes
+}
+
+entity Password {
+    * URL tokenUrl
+    URL refreshUrl
+    * Map<String, String> scopes
+}
+
+entity ClientCredentials {
+    * URL tokenUrl
+    URL refreshUrl
+    * Map<String, String> scopes
+}
+
+entity AuthorizationCode {
+    * URL authorizationUrl
+    * URL tokenUrl
+    URL refreshUrl
+    * Map<String, String> scopes
+}
+
+entity OpenIdConnect {
+    String description
+    * URL openIdConnectUrl
+}
+
+entity Tag #LightPink {
+    * String name
+    String description
+}
+
+OpenAPI ||--|| Info : info
+OpenAPI ||--o{ Server : servers
+OpenAPI ||--o{ PathItem : paths
+OpenAPI ||--o{ PathItem : webhooks
+OpenAPI ||--o| Components : components
+OpenAPI ||--o{ Tag : tags
+OpenAPI ||--o| ExternalDocumentation : externalDocs
+
+Info ||--o| Contact : contact
+Info ||--o| License : license
+
+Server ||--o{ ServerVariable : variables
+
+Tag ||--o| ExternalDocumentation : externalDocs
+
+PathItem ||--o| Operation : get
+PathItem ||--o| Operation : put
+PathItem ||--o| Operation : post
+PathItem ||--o| Operation : delete
+PathItem ||--o| Operation : options
+PathItem ||--o| Operation : head
+PathItem ||--o| Operation : patch
+PathItem ||--o| Operation : trace
+PathItem ||--o{ Server : servers
+PathItem ||--o{ Parameter : parameters
+
+Operation ||--o| ExternalDocumentation : externalDocs
+Operation ||--o{ Parameter : parameters
+Operation ||--o| RequestBody : requestBody
+Operation ||--o{ Response : responses
+Operation ||--o{ Callback : callbacks
+Operation ||--o{ Server : servers
+
+Parameter ||--o| Schema: schema
+Parameter ||--o{ Example : examples
+Parameter ||--o{ MediaType : content
+
+Schema ||--o| Discriminator : discriminator
+Schema ||--o| XML : xml
+Schema ||--o| ExternalDocumentation : externalDocs
+
+MediaType ||--o| Schema: schema
+MediaType ||--o{ Example : examples
+MediaType ||--o{ Encoding : encoding
+
+Encoding ||--o{ Header : headers
+
+Header ||--o| Schema: schema
+Header ||--o{ Example : examples
+Header ||--o{ MediaType : content
+
+RequestBody ||--|{ MediaType : content
+
+Response ||--o{ Header : headers
+Response ||--o{ MediaType : content
+Response ||--o{ Link : links
+
+Link ||--o| Server : server
+
+Callback ||--o{ PathItem : callbackPaths
+
+Components ||--o{ Schema : schemas
+Components ||--o{ Response : responses
+Components ||--o{ Parameter : parameters
+Components ||--o{ Example : examples
+Components ||--o{ RequestBody : requestBodies
+Components ||--o{ Header : headers
+Components ||--o{ SecurityScheme : securitySchemes
+Components ||--o{ Link : links
+Components ||--o{ Callback : callbacks
+Components ||--o{ PathItem : pathItems
+
+SecurityScheme <|-- ApiKey
+SecurityScheme <|-- Http
+SecurityScheme <|-- MutualTLS
+SecurityScheme <|-- OAuth2
+SecurityScheme <|-- OpenIdConnect
+
+OAuth2 ||--|{ OAuthFlow : flows
+
+OAuthFlow <|-- Implicit
+OAuthFlow <|-- Password
+OAuthFlow <|-- ClientCredentials
+OAuthFlow <|-- AuthorizationCode
+
+@enduml

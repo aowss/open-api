@@ -3,7 +3,7 @@ package openapi.model.v310;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
-public record Parameter(@NotNull String name, @NotNull Location in, String description, Boolean required, Boolean depracted, Boolean allowEmptyValue, Style style, Boolean explode, Boolean allowReserved, Schema schema, Object example, Map<String, Example> examples, Map<String, MediaType> content) {
+public record Parameter(@NotNull String name, @NotNull Location in, String description, Boolean required, Boolean deprecated, Boolean allowEmptyValue, Style style, Boolean explode, Boolean allowReserved, Schema schema, Object example, Map<String, Example> examples, Map<String, MediaType> content) {
     public Parameter {
         if (schema != null && content != null) throw new IllegalArgumentException("A 'parameter' Object can't have both a 'schema' and a 'content' field");
         if (in == Location.path && (required != null && required == false)) throw new IllegalArgumentException("A 'path' parameter must be required");
