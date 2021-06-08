@@ -185,7 +185,7 @@ security:
 tags:
   - name: pet
     description: Pets operations
-links:
+link:
   operationId: getUserInfo
   parameters:
     key1: value1
@@ -194,6 +194,17 @@ links:
   server:
     url: https://{username}.gigantic-server.com:{port}/{basePath}
     description: The production API server
+    variables:
+      username:
+        default: demo
+        description: this value is assigned by the service provider, in this example `gigantic-server.com`
+      port:
+        enum:
+          - 8443
+          - 443
+        default: 8443
+      basePath:
+        default: v2
 externalDocs:
   description: Find more info here
   url: 'https://example.com'
