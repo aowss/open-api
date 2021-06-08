@@ -92,6 +92,9 @@ public class ServerTest {
         assertThat(server.url(), is("https://{username}.gigantic-server.com:{port}/{basePath}"));
         assertThat(server.description(), is("The production API server"));
         assertThat(server.variables().size(), is(3));
+        assertThat(server.variables().get("username"), is(new ServerVariable(null, "demo", "this value is assigned by the service provider, in this example `gigantic-server.com`")));
+        assertThat(server.variables().get("port"), is(new ServerVariable(List.of("8443", "443"), "8443", null)));
+        assertThat(server.variables().get("basePath"), is(new ServerVariable(null, "v2", null)));
         assertThat(server.effectiveUrl(), is(new URL("https://demo.gigantic-server.com:8443/v2")));
     }
 

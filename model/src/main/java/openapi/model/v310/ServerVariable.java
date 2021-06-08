@@ -9,7 +9,7 @@ import java.util.List;
  * @param enums        An enumeration of string values to be used if the substitution options are from a limited set. The array MUST NOT be empty. <br/>
  *                     The field name is {@code enum}.
  * @param defaultValue The default value to use for substitution, which SHALL be sent if an alternate value is not supplied. <br/>
- *                     Note this behavior is different than the {@link openapi.model.v310.Schema Schema Object}'s treatment of default values, because in those cases parameter values are optional. <br/>
+ *                     Note this behavior is different than the {@link Schema Schema Object}'s treatment of default values, because in those cases parameter values are optional. <br/>
  *                     If the enum is defined, the value MUST exist in the enum's values. <br/>
  *                     The field name is {@code default}.
  * @param description  An optional description for the server variable. CommonMark syntax MAY be used for rich text representation.
@@ -23,7 +23,7 @@ public record ServerVariable(List<String> enums, @NotNull String defaultValue, S
      * @param enums        An enumeration of string values to be used if the substitution options are from a limited set. The array MUST NOT be empty. <br/>
      *                     The field name is {@code enum}.
      * @param defaultValue The default value to use for substitution, which SHALL be sent if an alternate value is not supplied. <br/>
-     *                     Note this behavior is different than the {@link openapi.model.v310.Schema Schema Object}'s treatment of default values, because in those cases parameter values are optional. <br/>
+     *                     Note this behavior is different than the {@link Schema Schema Object}'s treatment of default values, because in those cases parameter values are optional. <br/>
      *                     If the enum is defined, the value MUST exist in the enum's values. <br/>
      *                     The field name is {@code default}.
      * @param description  An optional description for the server variable. CommonMark syntax MAY be used for rich text representation.

@@ -1,9 +1,7 @@
 package openapi.model.v310;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Map;
-
-//  TODO: should operationRef be a URI ?
 
 /**
  * The Link object represents a possible design-time link for a response. The presence of a link does not guarantee the caller's ability to successfully invoke it, rather it provides a known relationship and traversal mechanism between responses and other operations.
@@ -21,7 +19,7 @@ import java.util.Map;
  * @param description  A description of the link. CommonMark syntax MAY be used for rich text representation.
  * @param server       A server object to be used by the target operation.
  */
-public record Link(URL operationRef, String operationId, Map<String, String> parameters, Object requestBody, String description, Server server) {
+public record Link(URI operationRef, String operationId, Map<String, String> parameters, Object requestBody, String description, Server server) {
 
     /**
      * Creates an instance of a {@code Link} record class.
@@ -41,12 +39,9 @@ public record Link(URL operationRef, String operationId, Map<String, String> par
      */
     public Link {
         if (operationRef != null && operationId != null)
-            throw new IllegalArgumentException("An 'link' Object can't have both an 'operationRef' and an 'operationId' field");
-        if (operationRef == null && isNullOrEmpty(operationId))
-            throw new IllegalArgumentException("An 'link' Object must have either an 'operationRef' or an 'operationId' field");
+            throw new IllegalArgumentException("A 'link' Object can't have both an 'operationRef' and an 'operationId' field");
+        if (operationRef == null && (operationId == null || operationId.isBlank()))
+            throw new IllegalArgumentException("A 'link' Object must have either an 'operationRef' or an 'operationId' field");
     }
 
-    private boolean isNullOrEmpty(String str) {
-        return str == null || str.isBlank();
-    }
 }

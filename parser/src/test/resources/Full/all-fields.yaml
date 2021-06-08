@@ -185,6 +185,15 @@ security:
 tags:
   - name: pet
     description: Pets operations
+links:
+  operationId: getUserInfo
+  parameters:
+    key1: value1
+    key2: value2
+  description: the target link operation
+  server:
+    url: https://{username}.gigantic-server.com:{port}/{basePath}
+    description: The production API server
 externalDocs:
   description: Find more info here
   url: 'https://example.com'
