@@ -173,10 +173,6 @@ entity OAuth2 {
 interface OAuthFlow {
 }
 
-entity OAuth2 {
-    String description
-}
-
 entity Implicit {
     * URL authorizationUrl
     URL refreshUrl
