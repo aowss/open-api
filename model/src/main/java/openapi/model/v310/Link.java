@@ -39,14 +39,12 @@ public record Link(URI operationRef, String operationId, Map<String, String> par
      *                                  if both {@code operationRef} and {@code operationId} are not specified
      */
     public Link {
-        if (operationRef != null && operationId != null)
-            throw new IllegalArgumentException("A 'link' Object can't have both an 'operationRef' and an 'operationId' field");
-        if (operationRef == null && (operationId == null || operationId.isBlank()))
-            throw new IllegalArgumentException("A 'link' Object must have either an 'operationRef' or an 'operationId' field");
+        if (operationRef != null && operationId != null) throw new IllegalArgumentException("A 'link' Object can't have both an 'operationRef' and an 'operationId' field");
+        if (operationRef == null && (operationId == null || operationId.isBlank())) throw new IllegalArgumentException("A 'link' Object must have either an 'operationRef' or an 'operationId' field");
     }
 
     /**
-     * Creates an instance of a {@code Link} record class where the link will be resolved using operationRef value to locate an existing Operation Object.
+     * Creates an instance of a {@code Link} record class where the link will be resolved using the {@code operationRef} value to locate an existing {@link Operation} Object.
      *
      * @param operationRef A relative or absolute URI reference to an OAS operation.
      *                     This field is mutually exclusive of the {@code operationId} field, and MUST point to an {@link Operation} Object. Relative {@code operationRef} values MAY be used to locate an existing {@link Operation} Object in the OpenAPI definition.
@@ -62,7 +60,7 @@ public record Link(URI operationRef, String operationId, Map<String, String> par
     }
 
     /**
-     * Creates an instance of a {@code Link} record class where the link will be resolved using operationRef value to locate an existing Operation Object.
+     * Creates an instance of a {@code Link} record class where the link will be resolved using the {@code operationId} value to locate an existing {@link Operation} Object.
      *
      * @param operationId  The name of an existing, resolvable OAS operation, as defined with a unique operationId.
      *                     This field is mutually exclusive of the {@code operationRef} field.
@@ -73,7 +71,7 @@ public record Link(URI operationRef, String operationId, Map<String, String> par
      * @param description  A description of the link. CommonMark syntax MAY be used for rich text representation.
      * @param server       A server object to be used by the target operation.
      */
-    public Link(String operationId, Map<String, String> parameters, Object requestBody, String description, Server server) {
+    public Link(@NotNull String operationId, Map<String, String> parameters, Object requestBody, String description, Server server) {
         this(null, operationId, parameters, requestBody, description, server);
     }
 

@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayName("Link Object : https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#link-object")
 class LinkTest {
 
-    static String allFieldsOperationRefJSON = "/Link/all-fields-operation-ref.json";
-    static String allFieldsOperationIdJSON = "/Link/all-fields-operation-id.json";
-    static String allFieldsOperationRefYAML = "/Link/all-fields-operation-ref.yaml";
-    static String allFieldsOperationIdYAML = "/Link/all-fields-operation-id.yaml";
-    static String missingOperationIdentifier = "/Link/missing-operation-identifier.json";
-    static String bothOperationIdentifiersJSON = "/Link/both-operation-identifier-provided.json";
+    static String allFieldsOperationRefJSON = "/Link/all-fields-operationRef.json";
+    static String allFieldsOperationIdJSON = "/Link/all-fields-operationId.json";
+    static String allFieldsOperationRefYAML = "/Link/all-fields-operationRef.yaml";
+    static String allFieldsOperationIdYAML = "/Link/all-fields-operationId.yaml";
+    static String missingOperationIdentifier = "/Link/missing-fields.json";
+    static String operationIdOperationRefJSON = "/Link/operationId-operationRef.json";
 
     @Test
     @Tag("JSON")
@@ -53,7 +53,7 @@ class LinkTest {
 
     @Test
     @Tag("YAML")
-    @DisplayName("All fields with operation ref [YAML]")
+    @DisplayName("All fields with operation id [YAML]")
     public void allFieldsOperationIdYAML() throws Exception {
         Link link = Parser.parseYAML(getClass().getResource(allFieldsOperationIdYAML), Link.class);
         assertThat(link.operationId(), is("getUserInfo"));
@@ -74,16 +74,16 @@ class LinkTest {
     @Tag("JSON")
     @DisplayName("Both operationRef and operationId provided")
     public void bothOperationIdentifiersProvided() {
-        ParsingException exception = assertThrows(ParsingException.class, () -> Parser.parseJSON(getClass().getResource(bothOperationIdentifiersJSON), Link.class));
+        ParsingException exception = assertThrows(ParsingException.class, () -> Parser.parseJSON(getClass().getResource(operationIdOperationRefJSON), Link.class));
         assertThat(exception.getMessage(), startsWith("Cannot construct instance of `openapi.model.v310.Link`, problem: A 'link' Object can't have both an 'operationRef' and an 'operationId' field"));
         assertThat(exception.getCause().getClass(), is(IllegalArgumentException.class));
         assertThat(exception.getCause().getMessage(), is("A 'link' Object can't have both an 'operationRef' and an 'operationId' field"));
     }
-
 
     public void validateAllFields(Link link) {
         assertThat(link.parameters(), is(Map.of("key1", "value1", "key2", "value2")));
         assertThat(link.description(), is("the target link operation"));
         assertThat(link.server().url(), is("https://{username}.gigantic-server.com:{port}/{basePath}"));
     }
+
 }
