@@ -40,7 +40,7 @@
     }
   ],
   "paths": {
-    "/pets":{
+    "/pets": {
       "get": {
         "description": "Returns pets based on ID",
         "summary": "Find pets by ID",
@@ -54,6 +54,36 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Pet"
+                  }
+                }
+              }
+            },
+            "links": {
+              "*/*": {
+                "operationId": "getUserInfo",
+                "parameters": {
+                  "key1": "value1",
+                  "key2": "value2"
+                },
+                "description": "the target link operation",
+                "server": {
+                  "url": "https://{username}.gigantic-server.com:{port}/{basePath}",
+                  "description": "The production API server",
+                  "variables": {
+                    "username": {
+                      "default": "demo",
+                      "description": "this value is assigned by the service provider, in this example `gigantic-server.com`"
+                    },
+                    "port": {
+                      "enum": [
+                        "8443",
+                        "443"
+                      ],
+                      "default": "8443"
+                    },
+                    "basePath": {
+                      "default": "v2"
+                    }
                   }
                 }
               }
@@ -103,7 +133,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["status"]
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -226,7 +258,7 @@
         "in": "query",
         "description": "max records to return",
         "required": true,
-        "schema" : {
+        "schema": {
           "type": "integer",
           "format": "int32"
         }
