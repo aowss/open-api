@@ -31,12 +31,15 @@ public class    LicenseTest {
     static String missingFields = "/License/missing-fields.json";
     static String invalidUrl = "/License/invalid-url.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields with URL [JSON]")
     public void allFieldsURLJSON() throws IOException, ParsingException {
         License license = Parser.parseJSON(getClass().getResource(allFieldsURLJSON), License.class);
         validateAllFieldsURL(license);
+        serializationTester.checkJSONSerialization(license, allFieldsURLJSON);
     }
 
     @Test
@@ -45,6 +48,7 @@ public class    LicenseTest {
     public void allFieldsURLYAML() throws IOException, ParsingException {
         License license = Parser.parseYAML(getClass().getResource(allFieldsURLYAML), License.class);
         validateAllFieldsURL(license);
+        serializationTester.checkYAMLSerialization(license, allFieldsURLYAML);
     }
 
     @Test
@@ -53,6 +57,7 @@ public class    LicenseTest {
     public void allFieldsIdentifierJSON() throws IOException, ParsingException {
         License license = Parser.parseJSON(getClass().getResource(allFieldsIdentifierJSON), License.class);
         validateAllFieldsIdentifier(license);
+        serializationTester.checkJSONSerialization(license, allFieldsIdentifierJSON);
     }
 
     @Test
@@ -61,6 +66,7 @@ public class    LicenseTest {
     public void allFieldsIdentifierYAML() throws IOException, ParsingException {
         License license = Parser.parseYAML(getClass().getResource(allFieldsIdentifierYAML), License.class);
         validateAllFieldsIdentifier(license);
+        serializationTester.checkYAMLSerialization(license, allFieldsIdentifierYAML);
     }
 
     @Test

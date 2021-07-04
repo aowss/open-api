@@ -1,5 +1,6 @@
 package openapi.parser.deserializer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -15,6 +16,7 @@ public class OAuthFlowDeserializer extends StdDeserializer<OAuthFlow> {
     private static ObjectMapper objectMapper = new ObjectMapper();
     static {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     public OAuthFlowDeserializer() {

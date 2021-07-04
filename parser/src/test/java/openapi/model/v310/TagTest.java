@@ -30,11 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayName("Tag Object : https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#tag-object")
 public class TagTest {
 
+    //  TODO: should that be called allFieldsJSON
     static String allFieldsURLJSON = "/Tag/all-fields.json";
     static String allFieldsURLYAML = "/Tag/all-fields.yaml";
     static String mandatoryFields = "/Tag/mandatory-fields.json";
     static String missingFields = "/Tag/missing-fields.json";
     static String invalidUrl = "/Tag/invalid-docs.json";
+
+    private static SerializationTester serializationTester = new SerializationTester();
 
     @Test
     @org.junit.jupiter.api.Tag("JSON")
@@ -42,6 +45,7 @@ public class TagTest {
     public void allFieldsURLJSON() throws IOException, ParsingException {
         Tag tag = Parser.parseJSON(getClass().getResource(allFieldsURLJSON), Tag.class);
         validateAllFields(tag);
+        serializationTester.checkJSONSerialization(tag, allFieldsURLJSON);
     }
 
     @Test
@@ -50,6 +54,7 @@ public class TagTest {
     public void allFieldsURLYAML() throws IOException, ParsingException {
         Tag tag = Parser.parseYAML(getClass().getResource(allFieldsURLYAML), Tag.class);
         validateAllFields(tag);
+        serializationTester.checkYAMLSerialization(tag, allFieldsURLYAML);
     }
 
     @Test

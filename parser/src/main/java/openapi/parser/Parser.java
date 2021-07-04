@@ -1,5 +1,7 @@
 package openapi.parser;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -10,16 +12,15 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import openapi.model.v310.*;
 import openapi.model.v310.security.*;
 import openapi.model.v310.security.oauth.*;
-import openapi.parser.deserializer.OAuthFlowDeserializer;
-import openapi.parser.deserializer.SecuritySchemeDeserializer;
-import openapi.parser.deserializer.ServerVariableDeserializer;
-import openapi.parser.deserializer.VersionDeserializer;
+import openapi.parser.deserializer.*;
+import openapi.parser.serializer.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,7 @@ import static java.util.stream.Collectors.joining;
 
 public class Parser {
 
+    //  TODO: check if we need 2 mappers
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -36,12 +38,25 @@ public class Parser {
     static {
         //  Didn't manage to make the mixin work with records
         SimpleModule module = new SimpleModule();
+        //  ServerVariable
         module.addDeserializer(ServerVariable.class, new ServerVariableDeserializer());
+        module.addSerializer(ServerVariable.class, new ServerVariableSerializer());
+        //  Version
         module.addDeserializer(Version.class, new VersionDeserializer());
+        module.addSerializer(Version.class, new VersionSerializer());
+        //  SecurityScheme
         module.addDeserializer(SecurityScheme.class, new SecuritySchemeDeserializer());
+//        module.addSerializer(SecurityScheme.class, new SecuritySchemeSerializer());
+        module.setSerializerModifier(new SecuritySchemeBeanSerializerModifier());
+//        module.addDeserializer(Scheme.class, new SchemeDeserializer());
+        module.addSerializer(Scheme.class, new SchemeSerializer());
+        //  OAuthFlow
         module.addDeserializer(OAuthFlow.class, new OAuthFlowDeserializer());
+
         jsonMapper.registerModule(module);
+        jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         yamlMapper.registerModule(module);
+        yamlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     public static final <T> T parseJSON(URL src, Class<T> valueType) throws IOException, ParsingException {
@@ -85,6 +100,24 @@ public class Parser {
             throw ioe;
         } catch (Exception e) {
             throw e;
+        }
+    }
+
+    public static final void writeJSON(Writer writer, Object object) throws ParsingException, IOException {
+        write(jsonMapper, writer, object);
+    }
+
+    public static final void writeYAML(Writer writer, Object object) throws ParsingException, IOException {
+        write(yamlMapper, writer, object);
+    }
+
+    private static void write(ObjectMapper mapper, Writer writer, Object object) throws ParsingException, IOException {
+        try {
+            mapper.writeValue(writer, object);
+        } catch (JsonGenerationException | JsonMappingException exc) {
+            throw new ParsingException(exc.getMessage(), exc);
+        } catch (IOException ioe) {
+            throw ioe;
         }
     }
 

@@ -28,12 +28,15 @@ public class InfoTest {
     static String invalidTermsOfServiceJSON = "/Info/invalid-termsOfService.json";
     static String invalidTermsOfServiceYAML = "/Info/invalid-termsOfService.yaml";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException, ParsingException {
         Info info = Parser.parseJSON(getClass().getResource(allFieldsJSON), Info.class);
         validateAllFields(info);
+        serializationTester.checkJSONSerialization(info, allFieldsJSON);
     }
 
     @Test
@@ -42,6 +45,7 @@ public class InfoTest {
     public void allFieldsYAML() throws IOException, ParsingException {
         Info info = Parser.parseYAML(getClass().getResource(allFieldsYAML), Info.class);
         validateAllFields(info);
+        serializationTester.checkYAMLSerialization(info, allFieldsYAML);
     }
 
     @Test

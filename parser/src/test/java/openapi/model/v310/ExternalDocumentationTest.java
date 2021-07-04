@@ -27,12 +27,15 @@ public class ExternalDocumentationTest {
     static String missingFields = "/ExternalDocumentation/missing-fields.json";
     static String invalidUrl = "/ExternalDocumentation/invalid-url.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException, ParsingException {
         ExternalDocumentation externalDocumentation = Parser.parseJSON(getClass().getResource(allFieldsJSON), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
+        serializationTester.checkJSONSerialization(externalDocumentation, allFieldsJSON);
     }
 
     @Test
@@ -41,6 +44,7 @@ public class ExternalDocumentationTest {
     public void allFieldsYAML() throws IOException, ParsingException {
         ExternalDocumentation externalDocumentation = Parser.parseYAML(getClass().getResource(allFieldsYAML), ExternalDocumentation.class);
         validateAllFields(externalDocumentation);
+        serializationTester.checkYAMLSerialization(externalDocumentation, allFieldsYAML);
     }
 
     @Test

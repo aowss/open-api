@@ -24,12 +24,15 @@ public class DiscriminatorTest {
     static String mandatoryFields = "/Discriminator/mandatory-fields.json";
     static String missingFields = "/Discriminator/missing-fields.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields with URL [JSON]")
     public void allFieldsURLJSON() throws IOException, ParsingException {
         Discriminator discriminator = Parser.parseJSON(getClass().getResource(allFieldsJSON), Discriminator.class);
         validateAllFieldsURL(discriminator);
+        serializationTester.checkJSONSerialization(discriminator, allFieldsJSON);
     }
 
     @Test
@@ -38,6 +41,7 @@ public class DiscriminatorTest {
     public void allFieldsURLYAML() throws IOException, ParsingException {
         Discriminator discriminator = Parser.parseYAML(getClass().getResource(allFieldsYAML), Discriminator.class);
         validateAllFieldsURL(discriminator);
+        serializationTester.checkYAMLSerialization(discriminator, allFieldsYAML);
     }
 
     @Test

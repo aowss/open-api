@@ -29,12 +29,15 @@ public class ExampleTest {
     static String valueAndExternalValue = "/Example/value-externalValue.json";
     static String invalidUri = "/Example/invalid-uri.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields with 'value' [JSON]")
     public void allFieldsURLJSON() throws IOException, ParsingException {
         Example example = Parser.parseJSON(getClass().getResource(allFieldsURLJSON), Example.class);
         validateAllFieldsValue(example);
+        serializationTester.checkJSONSerialization(example, allFieldsURLJSON);
     }
 
     @Test
@@ -43,6 +46,7 @@ public class ExampleTest {
     public void allFieldsURLYAML() throws IOException, ParsingException {
         Example example = Parser.parseYAML(getClass().getResource(allFieldsURLYAML), Example.class);
         validateAllFieldsValue(example);
+        serializationTester.checkYAMLSerialization(example, allFieldsURLYAML);
     }
 
     @Test
@@ -51,6 +55,7 @@ public class ExampleTest {
     public void allFieldsIdentifierJSON() throws IOException, URISyntaxException, ParsingException {
         Example example = Parser.parseJSON(getClass().getResource(allFieldsIdentifierJSON), Example.class);
         validateAllFieldsExternalValue(example);
+        serializationTester.checkJSONSerialization(example, allFieldsIdentifierJSON);
     }
 
     @Test
@@ -59,6 +64,7 @@ public class ExampleTest {
     public void allFieldsIdentifierYAML() throws IOException, URISyntaxException, ParsingException {
         Example example = Parser.parseYAML(getClass().getResource(allFieldsIdentifierYAML), Example.class);
         validateAllFieldsExternalValue(example);
+        serializationTester.checkYAMLSerialization(example, allFieldsIdentifierYAML);
     }
 
     @Test
