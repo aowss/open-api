@@ -131,7 +131,7 @@ entity Response {
     * String description
 }
 
-entity Link {
+entity Link #LightPink {
     String operationRef
     String operationId
     Map<String, String> parameters
