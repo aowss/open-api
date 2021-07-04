@@ -24,6 +24,8 @@ class LinkTest {
     static String missingOperationIdentifier = "/Link/missing-fields.json";
     static String operationIdOperationRefJSON = "/Link/operationId-operationRef.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields with operation ref [JSON]")
@@ -31,6 +33,7 @@ class LinkTest {
         Link link = Parser.parseJSON(getClass().getResource(allFieldsOperationRefJSON), Link.class);
         assertThat(link.operationRef(), is(new URI("https://na2.gigantic-server.com/#/paths/some-path/get")));
         validateAllFields(link);
+        serializationTester.checkJSONSerialization(link, allFieldsOperationRefJSON);
     }
 
     @Test
@@ -40,6 +43,7 @@ class LinkTest {
         Link link = Parser.parseYAML(getClass().getResource(allFieldsOperationRefYAML), Link.class);
         assertThat(link.operationRef(), is(new URI("https://na2.gigantic-server.com/#/paths/some-path/get")));
         validateAllFields(link);
+        serializationTester.checkYAMLSerialization(link, allFieldsOperationRefYAML);
     }
 
     @Test
@@ -49,6 +53,7 @@ class LinkTest {
         Link link = Parser.parseJSON(getClass().getResource(allFieldsOperationIdJSON), Link.class);
         assertThat(link.operationId(), is("getUserInfo"));
         validateAllFields(link);
+        serializationTester.checkJSONSerialization(link, allFieldsOperationIdJSON);
     }
 
     @Test
@@ -58,6 +63,7 @@ class LinkTest {
         Link link = Parser.parseYAML(getClass().getResource(allFieldsOperationIdYAML), Link.class);
         assertThat(link.operationId(), is("getUserInfo"));
         validateAllFields(link);
+        serializationTester.checkYAMLSerialization(link, allFieldsOperationIdYAML);
     }
 
     @Test

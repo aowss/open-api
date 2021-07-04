@@ -18,7 +18,6 @@ import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
 import static java.util.function.Predicate.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -29,13 +28,16 @@ public class SerializationTester {
     public void checkJSONSerialization(Object model, String filePath) throws IOException, ParsingException {
         File output = getFile(filePath);
         Parser.writeJSON(new FileWriter(output), model);
-        assertEquals(mapper.readTree(getClass().getResource(filePath)), mapper.readTree(output));
+        checkDifferences(filePath, output);
     }
 
     public void checkYAMLSerialization(Object model, String filePath) throws IOException, ParsingException {
         File output = getFile(filePath);
         Parser.writeYAML(new FileWriter(output), model);
+        checkDifferences(filePath, output);
+    }
 
+    private void checkDifferences(String filePath, File output) throws IOException {
         /*
         //  This comparison isn't good enough because it doesn't catch differences like <code>"scheme": "Bearer"</code> and <code>"scheme": "bearer"</code>
         var readModel = Parser.parseYAML(output.toURL(), model.getClass());
@@ -54,6 +56,7 @@ public class SerializationTester {
                 .filter(not(isCaseInsensitiveScheme))
                 .toList();
         assertThat(nodes.size(), is(0));
+
     }
 
     private File getFile(String filePath) {
