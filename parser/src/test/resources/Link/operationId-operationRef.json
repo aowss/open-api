@@ -1,0 +1,4 @@
+{
+  "operationId": "getUserInfo",
+  "operationRef": "https://na2.gigantic-server.com/#/paths/some-path/get"
+}
