@@ -14,7 +14,7 @@ public class SchemeDeserializer extends StdDeserializer<Scheme> {
         this(null);
     }
 
-    public SchemeDeserializer(Class<?> vc) {
+    public SchemeDeserializer(Class<Scheme> vc) {
         super(vc);
     }
 

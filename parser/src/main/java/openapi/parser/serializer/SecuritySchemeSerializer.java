@@ -1,7 +1,6 @@
 package openapi.parser.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import openapi.model.v310.security.*;
@@ -12,11 +11,12 @@ import java.io.IOException;
 
 public class SecuritySchemeSerializer extends StdSerializer<SecurityScheme> {
 
-    private final JsonSerializer<Object> defaultSerializer;
+    public SecuritySchemeSerializer() {
+        this(null);
+    }
 
-    public SecuritySchemeSerializer(JsonSerializer<Object> defaultSerializer) {
-        super(SecurityScheme.class);
-        this.defaultSerializer = defaultSerializer;
+    public SecuritySchemeSerializer(Class<SecurityScheme> t) {
+        super(t);
     }
 
     @Override

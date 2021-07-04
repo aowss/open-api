@@ -14,7 +14,7 @@ public class VersionDeserializer extends StdDeserializer<Version> {
         this(null);
     }
 
-    public VersionDeserializer(Class<?> vc) {
+    public VersionDeserializer(Class<Version> vc) {
         super(vc);
     }
 

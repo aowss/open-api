@@ -16,7 +16,7 @@ public class ServerVariableDeserializer extends StdDeserializer<ServerVariable> 
         this(null);
     }
 
-    public ServerVariableDeserializer(Class<?> vc) {
+    public ServerVariableDeserializer(Class<ServerVariable> vc) {
         super(vc);
     }
 

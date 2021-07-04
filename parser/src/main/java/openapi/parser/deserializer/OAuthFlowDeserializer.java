@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class OAuthFlowDeserializer extends StdDeserializer<OAuthFlow> {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     static {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -23,7 +23,7 @@ public class OAuthFlowDeserializer extends StdDeserializer<OAuthFlow> {
         this(null);
     }
 
-    public OAuthFlowDeserializer(Class<?> vc) {
+    public OAuthFlowDeserializer(Class<OAuthFlow> vc) {
         super(vc);
     }
 
@@ -37,8 +37,7 @@ public class OAuthFlowDeserializer extends StdDeserializer<OAuthFlow> {
             case clientCredentials -> ClientCredentials.class;
             case authorizationCode -> AuthorizationCode.class;
         };
-        OAuthFlow flow = objectMapper.convertValue(node, type);
-        return flow;
+        return objectMapper.convertValue(node, type);
     }
 
 }

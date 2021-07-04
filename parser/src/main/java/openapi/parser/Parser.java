@@ -11,7 +11,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import openapi.model.v310.*;
 import openapi.model.v310.security.*;
-import openapi.model.v310.security.oauth.*;
 import openapi.parser.deserializer.*;
 import openapi.parser.serializer.*;
 
@@ -37,6 +36,7 @@ public class Parser {
 
     static {
         //  Didn't manage to make the mixin work with records
+
         SimpleModule module = new SimpleModule();
         //  ServerVariable
         module.addDeserializer(ServerVariable.class, new ServerVariableDeserializer());
@@ -45,13 +45,10 @@ public class Parser {
         module.addDeserializer(Version.class, new VersionDeserializer());
         module.addSerializer(Version.class, new VersionSerializer());
         //  SecurityScheme
-        module.addDeserializer(SecurityScheme.class, new SecuritySchemeDeserializer());
-//        module.addSerializer(SecurityScheme.class, new SecuritySchemeSerializer());
-        module.setSerializerModifier(new SecuritySchemeBeanSerializerModifier());
-//        module.addDeserializer(Scheme.class, new SchemeDeserializer());
+        module.addDeserializer(SecurityScheme.class, new SecuritySchemeDeserializer()); //  Includes the Scheme and OAuthFlow deserializers
+        module.addSerializer(SecurityScheme.class, new SecuritySchemeSerializer());
+        //  Scheme
         module.addSerializer(Scheme.class, new SchemeSerializer());
-        //  OAuthFlow
-        module.addDeserializer(OAuthFlow.class, new OAuthFlowDeserializer());
 
         jsonMapper.registerModule(module);
         jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

@@ -32,4 +32,5 @@ public class ServerVariableSerializer extends StdSerializer<ServerVariable> {
         if (serverVariable.description() != null && !serverVariable.description().isEmpty()) jsonGenerator.writeStringField("description", serverVariable.description());
         jsonGenerator.writeEndObject();
     }
+
 }
