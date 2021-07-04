@@ -1,5 +1,6 @@
 package openapi.parser.deserializer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -18,8 +19,10 @@ public class SecuritySchemeDeserializer extends StdDeserializer<SecurityScheme> 
     private static ObjectMapper objectMapper = new ObjectMapper();
     static {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         SimpleModule module = new SimpleModule();
         module.addDeserializer(OAuthFlow.class, new OAuthFlowDeserializer());
+        module.addDeserializer(Scheme.class, new SchemeDeserializer());
         objectMapper.registerModule(module);
     }
 

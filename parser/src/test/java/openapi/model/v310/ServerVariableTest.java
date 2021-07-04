@@ -27,12 +27,15 @@ public class ServerVariableTest {
     static String mandatoryFields = "/ServerVariable/mandatory-fields.json";
     static String missingFields = "/ServerVariable/missing-fields.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException, ParsingException {
         ServerVariable serverVariable = Parser.parseJSON(getClass().getResource(allFieldsJSON), ServerVariable.class);
         validateAllFields(serverVariable);
+        serializationTester.checkJSONSerialization(serverVariable, allFieldsJSON);
     }
 
     @Test
@@ -41,6 +44,7 @@ public class ServerVariableTest {
     public void allFieldsYAML() throws IOException, ParsingException {
         ServerVariable serverVariable = Parser.parseYAML(getClass().getResource(allFieldsYAML), ServerVariable.class);
         validateAllFields(serverVariable);
+        serializationTester.checkYAMLSerialization(serverVariable, allFieldsYAML);
     }
 
     @Test

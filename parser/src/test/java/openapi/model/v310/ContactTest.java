@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Tag;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,12 +24,15 @@ public class ContactTest {
     static String invalidUrl = "/Contact/invalid-url.json";
     static String invalidEmail = "/Contact/invalid-email.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
-    public void allFieldsJSON() throws IOException, ParsingException {
+    public void allFieldsJSON() throws IOException, ParsingException, URISyntaxException {
         Contact contact = Parser.parseJSON(getClass().getResource(allFieldsJSON), Contact.class);
         validateAllFields(contact);
+        serializationTester.checkJSONSerialization(contact, allFieldsJSON);
     }
 
     @Test
@@ -37,6 +41,7 @@ public class ContactTest {
     public void allFieldsYAML() throws IOException, ParsingException {
         Contact contact = Parser.parseYAML(getClass().getResource(allFieldsYAML), Contact.class);
         validateAllFields(contact);
+        serializationTester.checkYAMLSerialization(contact, allFieldsYAML);
     }
 
     @Test

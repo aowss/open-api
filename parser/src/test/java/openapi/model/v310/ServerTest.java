@@ -28,12 +28,15 @@ public class ServerTest {
     static String invalidUrl = "/Server/invalid-url.json";
     static String invalidUrlAfterSubstitution = "/Server/invalid-url-substitution.json";
 
+    private static SerializationTester serializationTester = new SerializationTester();
+
     @Test
     @Tag("JSON")
     @DisplayName("All fields [JSON]")
     public void allFieldsJSON() throws IOException, ParsingException {
         Server server = Parser.parseJSON(getClass().getResource(allFieldsJSON), Server.class);
         validateAllFields(server);
+        serializationTester.checkJSONSerialization(server, allFieldsJSON);
     }
 
     @Test
@@ -42,6 +45,7 @@ public class ServerTest {
     public void allFieldsYAML() throws IOException, ParsingException {
         Server server = Parser.parseYAML(getClass().getResource(allFieldsYAML), Server.class);
         validateAllFields(server);
+        serializationTester.checkYAMLSerialization(server, allFieldsYAML);
     }
 
     @Test

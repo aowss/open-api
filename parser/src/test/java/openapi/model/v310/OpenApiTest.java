@@ -1,9 +1,7 @@
 package openapi.model.v310;
 
-import openapi.model.v310.security.OAuth2;
-import openapi.model.v310.security.Type;
-import openapi.model.v310.security.oauth.Implicit;
-import openapi.model.v310.security.oauth.OAuthFlowType;
+import openapi.model.v310.security.*;
+import openapi.model.v310.security.oauth.*;
 
 import openapi.parser.Parser;
 import openapi.parser.ParsingException;
@@ -15,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -26,6 +26,8 @@ public class OpenApiTest {
 
     static String allFieldsJSON = "/Full/all-fields.json";
     static String allFieldsYAML = "/Full/all-fields.yaml";
+
+    private static SerializationTester serializationTester = new SerializationTester();
 
 //    @Test
 //    @Tag("JSON")
@@ -41,6 +43,7 @@ public class OpenApiTest {
     public void allFieldsYAML() throws IOException, ParsingException {
         OpenApi openApi = Parser.parseYAML(getClass().getResource(allFieldsYAML), OpenApi.class);
         validateAllFields(openApi);
+        serializationTester.checkYAMLSerialization(openApi, allFieldsYAML);
     }
 
     public void validateAllFields(OpenApi openApi) throws MalformedURLException {
@@ -60,11 +63,48 @@ public class OpenApiTest {
         assertThat(openApi.components().parameters().get("skipParam").in(), is(Location.query));
         assertThat(openApi.components().responses().size(), is(3));
         assertThat(openApi.components().responses().get("GeneralError").content().size(), is(1));
-        assertThat(openApi.components().securitySchemes().size(), is(2));
-        assertThat(openApi.components().securitySchemes().get("petstore_auth").type(), is(Type.oauth2));
-        OAuth2 oauth2 = ((OAuth2)openApi.components().securitySchemes().get("petstore_auth"));
-        assertThat(oauth2.flows().size(), is(1));
-        assertThat(((Implicit)oauth2.flows().get(OAuthFlowType.implicit)).scopes().size(), is(2));
+        Map<String, SecurityScheme> securitySchemes = openApi.components().securitySchemes();
+        assertThat(securitySchemes.size(), is(4));
+        //  API Key
+        assertThat(securitySchemes.get("api_key").type(), is(Type.apiKey));
+        ApiKey apiKey = ((ApiKey)securitySchemes.get("api_key"));
+        assertThat(apiKey.name(), is("api_key"));
+        assertThat(apiKey.in(), is(Location.header));
+        //  HTTP Basic
+        assertThat(securitySchemes.get("http_basic").type(), is(Type.http));
+        Http httpBasic = ((Http)securitySchemes.get("http_basic"));
+        assertThat(httpBasic.scheme(), is(Scheme.Basic));
+        //  HTTP Bearer
+        assertThat(securitySchemes.get("http_bearer").type(), is(Type.http));
+        Http httpBearer = ((Http)securitySchemes.get("http_bearer"));
+        assertThat(httpBearer.scheme(), is(Scheme.Bearer));
+        assertThat(httpBearer.bearerFormat(), is("JWT"));
+        //  OAuth 2
+        assertThat(securitySchemes.get("petstore_auth").type(), is(Type.oauth2));
+        OAuth2 oauth2 = ((OAuth2)securitySchemes.get("petstore_auth"));
+        assertThat(oauth2.flows().size(), is(4));
+        //  Implicit Flow
+        Implicit implicit = ((Implicit)oauth2.flows().get(OAuthFlowType.implicit));
+        assertThat(implicit.authorizationUrl(), is(new URL("https://example.org/api/oauth/dialog")));
+        assertThat(implicit.refreshUrl(), is(new URL("https://example.com/api/oauth/refresh")));
+        assertThat(implicit.scopes(), is(Map.of("write:pets", "modify pets in your account", "read:pets", "read your pets")));
+        //  Password Flow
+        Password password = ((Password)oauth2.flows().get(OAuthFlowType.password));
+        assertThat(password.tokenUrl(), is(new URL("https://example.com/api/oauth/token")));
+        assertThat(password.refreshUrl(), is(new URL("https://example.com/api/oauth/refresh")));
+        assertThat(password.scopes(), is(Map.of("write:pets", "modify pets in your account", "read:pets", "read your pets")));
+        //  Password Flow
+        ClientCredentials clientCredentials = ((ClientCredentials)oauth2.flows().get(OAuthFlowType.clientCredentials));
+        assertThat(clientCredentials.tokenUrl(), is(new URL("https://example.com/api/oauth/token")));
+        assertThat(clientCredentials.refreshUrl(), is(new URL("https://example.com/api/oauth/refresh")));
+        assertThat(clientCredentials.scopes(), is(Map.of("write:pets", "modify pets in your account", "read:pets", "read your pets")));
+        //  Authorization Code Flow
+        AuthorizationCode authorizationCode = ((AuthorizationCode)oauth2.flows().get(OAuthFlowType.authorizationCode));
+        assertThat(authorizationCode.authorizationUrl(), is(new URL("https://example.com/api/oauth/dialog")));
+        assertThat(authorizationCode.tokenUrl(), is(new URL("https://example.com/api/oauth/token")));
+        assertThat(authorizationCode.refreshUrl(), is(new URL("https://example.com/api/oauth/refresh")));
+        assertThat(authorizationCode.scopes(), is(Map.of("write:pets", "modify pets in your account", "read:pets", "read your pets")));
+
         assertThat(openApi.security().size(), is(1));
         assertThat(openApi.security().get(0).size(), is(1));
         assertThat(openApi.security().get(0).get("petstore_auth"), is(List.of("write:pets", "read:pets")));
