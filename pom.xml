@@ -30,12 +30,6 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- In order to run JUnit 5 tests in IntelliJ 2021.1.1 -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
@@ -43,19 +37,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- In order to run JUnit 5 tests in IntelliJ 2021.1.1 -->
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${junit.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
 
@@ -114,20 +95,5 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <repositories>
-        <!-- Adding the central repository so that it is searched first -->
-        <repository>
-            <id>central</id>
-            <name>Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-        <!-- In order to run JUnit 5 tests in IntelliJ 2021.1.1 -->
-        <repository>
-            <id>ebi</id>
-            <name>EBIPublic Repository</name>
-            <url>https://www.ebi.ac.uk/intact/maven/nexus/content/repositories/public/</url>
-        </repository>
-    </repositories>
 
 </project>
