@@ -89,7 +89,7 @@ class LinkTest {
     public void validateAllFields(Link link) {
         assertThat(link.parameters(), is(Map.of("key1", "value1", "key2", "value2")));
         assertThat(link.description(), is("the target link operation"));
-        assertThat(link.server().url(), is("https://{username}.gigantic-server.com:{port}/{basePath}"));
+        assertThat(link.server().url(), is("https://demo.gigantic-server.com:8443/v2"));
     }
 
 }
