@@ -86,7 +86,7 @@ entity Discriminator #LightPink {
     Map<String, String> mapping
 }
 
-entity XML {
+entity XML #LightPink {
     String name
     URI namespace
     String prefix

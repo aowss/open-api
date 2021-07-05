@@ -1,0 +1,7 @@
+{
+  "name": "animal",
+  "namespace": "https://www.example.com/xml",
+  "prefix": "xml",
+  "attribute": true,
+  "wrapped": false
+}

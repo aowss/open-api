@@ -1,0 +1,5 @@
+{
+  "name": "animal",
+  "namespace": "https://www.example.com/xml",
+  "prefix": "xml"
+}
