@@ -141,26 +141,23 @@ entity Link #LightPink {
 
 interface SecurityScheme {
     * Type type
+    String description
 }
 
 entity ApiKey {
-    String description
     * String name
     * Location in
 }
 
 entity Http {
-    String description
     * Scheme scheme
     String bearerFormat
 }
 
 entity MutualTLS {
-    String description
 }
 
 entity OAuth2 {
-    String description
 }
 
 'entity OAuthFlow {
@@ -199,7 +196,6 @@ entity AuthorizationCode {
 }
 
 entity OpenIdConnect {
-    String description
     * URL openIdConnectUrl
 }
 

@@ -133,26 +133,23 @@ Link {
 
 SecurityScheme {
     Type type
+    String description
 }
 
 ApiKey {
-    String description
     String name
     Location in
 }
 
 Http {
-    String description
     Scheme scheme
     String bearerFormat
 }
 
 MutualTLS {
-    String description
 }
 
 OAuth2 {
-    String description
 }
 
 OAuthFlow {
@@ -163,7 +160,6 @@ OAuthFlow {
 }
 
 OpenIdConnect {
-    String description
     URL openIdConnectUrl
 }
 
