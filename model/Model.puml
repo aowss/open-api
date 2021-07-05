@@ -168,31 +168,25 @@ entity OAuth2 {
 '}
 
 interface OAuthFlow {
+    URL refreshUrl
+    * Map<String, String> scopes
 }
 
 entity Implicit {
     * URL authorizationUrl
-    URL refreshUrl
-    * Map<String, String> scopes
 }
 
 entity Password {
     * URL tokenUrl
-    URL refreshUrl
-    * Map<String, String> scopes
 }
 
 entity ClientCredentials {
     * URL tokenUrl
-    URL refreshUrl
-    * Map<String, String> scopes
 }
 
 entity AuthorizationCode {
     * URL authorizationUrl
     * URL tokenUrl
-    URL refreshUrl
-    * Map<String, String> scopes
 }
 
 entity OpenIdConnect {
