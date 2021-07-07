@@ -159,7 +159,7 @@ var info = new Info.Builder("title", "version")
     .description("description") <2>
     .build(); <3>
 ----
-<1> The mandatory parameters must be passed to the builder
+<1> The mandatory parameters must be passed to the builder constructor
 <2> The meaning of each value is very clear
 <3> That's pretty concise!
 <4> This can be achieved by adding an `Info` constructor with just 2 parameters.
@@ -226,6 +226,24 @@ public class InfoBuilder { <1>
 ----
 <1> The builder is now a standalone class. +
 It is still a lot of noise but at least it is not part of the record.
+
+[NOTE]
+.Builder Design
+====
+The following traditional builder design decisions don't apply anymore :
+
+.Static inner class
+Traditional builders are inner classes because the builder is only useful to the outer class footnote:[In that case, it has to be `static` so that it can be instantiated without creating an instance of the outer class]. +
+
+.Private constructor
+If the builder is an inner class, the outer class constructor can be `private`. +
+This forces the use of the builder.
+
+In our case, we want to allow the clients to use both the builder and the constructor footnote:[The parser uses the constructor].
+
+.Constructor argument
+If only the builder can be used to instantiate the class, then the constructor can take a builder instance as its sole argument.
+====
 
 [source, java]
 .Client
