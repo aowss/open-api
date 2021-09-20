@@ -13,7 +13,7 @@ The project is structured as follows :
 
 The following should be installed locally :
 
-* [Java 16](https://www.oracle.com/java/technologies/javase-jdk16-downloads.html)
+* [Java 17](https://www.oracle.com/java/technologies/downloads)
 * [Maven 3.6](http://maven.apache.org/)
 
 ### Build
