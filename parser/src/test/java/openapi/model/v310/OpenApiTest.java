@@ -47,7 +47,7 @@ public class OpenApiTest {
     }
 
     public void validateAllFields(OpenApi openApi) throws MalformedURLException {
-        assertThat(openApi.openapi(), is(new Version(3,1,0)));
+        assertThat(openApi.openapi(), is(new Version(3, 1, "0")));
         assertThat(openApi.info().title(), is("Sample Pet Store App"));
         assertThat(openApi.servers().size(), is(1));
         assertThat(openApi.servers().get(0).effectiveUrl(), is(new URL("https://demo.gigantic-server.com:8443/v2")));

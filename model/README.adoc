@@ -387,7 +387,8 @@ The client code will therefore be very similar to the xref:client-builder[builde
 </project>
 ----
 <1> Add the `RecordBuilder` dependency
-<2> Configure the compiler plugin to use it
+<2> Configure the compiler plugin to use it. +
+The `mvn compile` command will generate the classes in the `target/generated-sources/annotations` folder.
 
 As mentioned https://github.com/Randgalt/record-builder#generation-via-includes[here], this library allows us to generate the builder without annotating the model.
 

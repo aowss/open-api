@@ -4,6 +4,9 @@ import openapi.model.v310.XML;
 
 import java.net.URI;
 
+/**
+ * Builder for {@link XML}
+ */
 public class XMLBuilder {
 
     private String name;

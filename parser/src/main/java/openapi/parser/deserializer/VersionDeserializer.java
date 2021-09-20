@@ -22,7 +22,7 @@ public class VersionDeserializer extends StdDeserializer<Version> {
     public Version deserialize(JsonParser parser, DeserializationContext deserializer) throws IOException {
         JsonNode node = parser.getCodec().readTree(parser);
         String version = node.asText();
-        return new Version(Integer.parseInt(version.split("\\.")[0]), Integer.parseInt(version.split("\\.")[1]), Integer.parseInt(version.split("\\.")[2]));
+        return new Version(version);
     }
 
 }
