@@ -16,7 +16,7 @@
 
     <properties>
         <bean.validation.version>2.0.1.Final</bean.validation.version>
-        <jackson.version>2.12.3</jackson.version>
+        <jackson.version>2.12.5</jackson.version>
         <!-- Unable to make 7.0.1.Final work -->
         <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
         <glassfish-validator.version>3.0.0</glassfish-validator.version>

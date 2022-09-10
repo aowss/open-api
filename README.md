@@ -13,8 +13,8 @@ The project is structured as follows :
 
 The following should be installed locally :
 
-* [Java 17](https://www.oracle.com/java/technologies/downloads)
-* [Maven 3.6](http://maven.apache.org/)
+* [Java 19](https://www.oracle.com/java/technologies/downloads)
+* [Maven 3.6](http://maven.apache.org/) or later
 
 ### Build
 
